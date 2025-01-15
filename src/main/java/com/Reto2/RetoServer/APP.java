@@ -24,6 +24,8 @@ public class APP {
 		SocketIOModule module = new SocketIOModule(server);
 		module.start();
 		
+		System.out.println("Server started on " + config.getPort());
+		
 
 	}
 

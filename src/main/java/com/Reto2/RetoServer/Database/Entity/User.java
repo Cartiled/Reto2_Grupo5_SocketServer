@@ -9,6 +9,16 @@ public abstract class User {
 	private String surName = null;
 	private String passWord = null;
 	private String email = null;
+	
+	public User(String userID,String name, String surName,String passWord,String email) {
+		this.userID = userID;
+		this.name = name;
+		this.surName = surName;
+		this.passWord = passWord;
+		this.email = email;
+	}
+	
+	
 	public String getUserID() {
 		return userID;
 	}

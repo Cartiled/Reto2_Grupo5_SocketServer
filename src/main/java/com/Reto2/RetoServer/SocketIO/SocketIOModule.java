@@ -61,9 +61,9 @@ public class SocketIOModule {
 			// We access to database and... we get a bunch of people
 			List<Student> students = new ArrayList<Student>();
 			
-			students.add(new Student("21308A", "asdafa", "surname", "adjafasad@gmail.com", "dsafaxc", 2, 2, true));
-			students.add(new Student("3213aP", "njdfsa", "surname", "msakfa@gmail.com", "dsado4192af", 7, 2, true));
-			students.add(new Student("1374143O", "sdajfasd", "surname", "posajdf@gmail.com", "dsabvd", 1, 2, true));
+			students.add(new Student("21308A", "asdafa", "surname",  "dsafaxc","adjafasad@gmail.com", 2, 2, true));
+			students.add(new Student("3213aP", "njdfsa", "surname",  "dsado4192af","msakfa@gmail.com", 7, 2, true));
+			students.add(new Student("1374143O", "sdajfasd", "surname",  "dsabvd","posajdf@gmail.com", 1, 2, true));
 
 			// We parse the answer into JSON
 			String answerMessage = new Gson().toJson(students);
