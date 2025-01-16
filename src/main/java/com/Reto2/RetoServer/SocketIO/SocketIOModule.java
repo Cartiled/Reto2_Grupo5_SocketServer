@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import com.Reto2.RetoServer.Config.Events;
 import com.Reto2.RetoServer.Model.MessageInput;
 import com.Reto2.RetoServer.Model.MessageOutput;
@@ -17,9 +21,12 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+
 public class SocketIOModule {
 	
 	private SocketIOServer server = null;
+	SessionFactory sesion = HibernateUtil.getSessionFactory();
+	Session session = sesion.openSession();
 
 	public SocketIOModule(SocketIOServer server) {
 		super();
@@ -64,39 +71,6 @@ public class SocketIOModule {
 			List<Student> students = new ArrayList<Student>();
 			
 			
-		
-			
-			
-			
-			
-			
-
-			// We parse the answer into JSON
-			String answerMessage = new Gson().toJson(students);
-
-			// ... and we send it back to the client inside a MessageOutput
-			MessageOutput messageOutput = new MessageOutput(answerMessage);
-			client.sendEvent(Events.ON_GET_ALL_ANSWER.value, messageOutput);
-		});
-	}
-
-	private DataListener<MessageInput> login() {
-		return ((client, data, ackSender) -> {
-			System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
-
-			// The JSON message from MessageInput
-			String message = data.getMessage();
-
-			// We parse the JSON into an JsonObject
-			// The JSON should be something like this: {"message": "patata"}
-			Gson gson = new Gson();
-			JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
-			String userName = jsonObject.get("message").getAsString();
-
-			// We access to database and...
-			// Let's say it answers with this...
-			
-			// We parse the answer into JSON
 			Student newStudent = new Student();
 			
 			
@@ -127,7 +101,41 @@ public class SocketIOModule {
 			newStudent.setMatriculations(matriculations);
 			newStudent.setYear((Character)'1');
 			
-			String answerMessage = gson.toJson(newStudent);
+			students.add(newStudent);
+			
+			
+			
+
+			// We parse the answer into JSON
+			String answerMessage = new Gson().toJson(students);
+
+			// ... and we send it back to the client inside a MessageOutput
+			MessageOutput messageOutput = new MessageOutput(answerMessage);
+			client.sendEvent(Events.ON_GET_ALL_ANSWER.value, messageOutput);
+		});
+	}
+
+	private DataListener<MessageInput> login() {
+		return ((client, data, ackSender) -> {
+			System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+
+			// The JSON message from MessageInput
+			String message = data.getMessage();
+
+			// We parse the JSON into an JsonObject
+			// The JSON should be something like this: {"message": "patata"}
+			Gson gson = new Gson();
+			JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
+			String userName = jsonObject.get("message").getAsString();
+
+			// We access to database and...
+			// Let's say it answers with this...
+//			Student student = new Student("931745P", userName, "surname", "afjad@gmail.com", "dsafaf", 5, 2, true);
+			
+			Client newclient = sendClient();
+			
+			// We parse the answer into JSON
+			String answerMessage = gson.toJson(newclient);
 
 			// ... and we send it back to the client inside a MessageOutput
 			MessageOutput messageOutput = new MessageOutput(answerMessage);
@@ -160,5 +168,16 @@ public class SocketIOModule {
 			server.stop();
 			System.out.println("Server stopped");
 		}
-	
+		public Client sendClient() {
+			String hql = "from Client where Surname = Doe";
+			Client client = new Client();
+			Query<?> q = session.createQuery(hql);
+			List<?> filas = q.list();
+			System.out.println(filas.size());
+			
+			for(int i=0; i < filas.size(); i++) {
+				client = (Client) filas.get(i);
+			}
+			return client;
+		} 
 }
