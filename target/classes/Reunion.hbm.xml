@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 16 ene 2025, 17:35:06 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="entities.Reunion" optimistic-lock="none" table="reunion">
+        <id name="reunionId" type="java.lang.Integer">
+            <column name="ReunionID"/>
+            <generator class="identity"/>
+        </id>
+        <many-to-one class="entities.Professor" fetch="select" name="professor">
+            <column name="UserId"/>
+        </many-to-one>
+        <property name="title" type="string">
+            <column length="40" name="Title"/>
+        </property>
+        <property name="affair" type="string">
+            <column length="100" name="Affair"/>
+        </property>
+        <property name="dayAndHour" type="date">
+            <column length="10" name="DayAndHour"/>
+        </property>
+        <property name="class_" type="string">
+            <column length="40" name="Class"/>
+        </property>
+        <property name="sendedRequest" type="java.lang.Integer">
+            <column name="SendedRequest"/>
+        </property>
+        <property name="status" type="string">
+            <column length="9" name="Status"/>
+        </property>
+        <property name="requestedProfessorName" type="string">
+            <column length="200" name="RequestedProfessorName"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="assistants" table="assistant">
+            <key>
+                <column name="UserId" not-null="true"/>
+            </key>
+            <one-to-many class="entities.Assistant"/>
+        </set>
+    </class>
+</hibernate-mapping>

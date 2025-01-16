@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.org/dtd/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+	<table catalog="reto2grupo5" name="assistant">
+		<column name="UserId"></column>
+		<column name="ReunionID"></column>
+	</table>
+	<table catalog="reto2grupo5" name="client">
+		<column name="UserId"></column>
+		<column name="Name"></column>
+		<column name="Surname"></column>
+		<column name="Password"></column>
+	</table>
+	<table catalog="reto2grupo5" name="course">
+		<column name="UserId"></column>
+		<column name="CourseID"></column>
+		<column name="ScheduleID"></column>
+		<column name="Title"></column>
+		<column name="Email"></column>
+	</table>
+	<table catalog="reto2grupo5" name="matriculation">
+		<column name="MatriculationID"></column>
+		<column name="UserId"></column>
+		<column name="Date"></column>
+	</table>
+	<table catalog="reto2grupo5" name="professor">
+		<column name="UserId"></column>
+	</table>
+	<table catalog="reto2grupo5" name="reunion">
+		<column name="UserId"></column>
+		<column name="Title"></column>
+		<column name="Affair"></column>
+		<column name="DayAndHour"></column>
+		<column name="Class"></column>
+		<column name="SendedRequest"></column>
+		<column name="Status"></column>
+		<column name="RequestedProfessorName"></column>
+		
+	</table>
+	<table catalog="reto2grupo5" name="schedule">
+		<column name="UserId"></column>
+		<column name="ScheduleID"></column>
+		<column name="Day"></column>
+		<column name="Week"></column>
+		<column name="TipoDato"></column>
+	</table>
+	<table catalog="reto2grupo5" name="student">
+		<column name="UserId"></column>
+		<column name="IdCourse"></column>
+		<column name="Year"></column>
+		<column name="IntensiveDual"></column>
+	</table>
+	<table catalog="reto2grupo5" name="subject">
+		<column name="SubjectID"></column>
+		<column name="CourseId"></column>
+		<column name="SubjectName"></column>
+		<column name="UserID"></column>
+	</table>
+</hibernate-reverse-engineering>

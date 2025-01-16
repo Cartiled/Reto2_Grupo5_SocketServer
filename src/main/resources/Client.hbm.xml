@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 16 ene 2025, 17:35:06 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="entities.Client" optimistic-lock="none" table="client">
+        <id name="userId" type="java.lang.Integer">
+            <column name="UserId"/>
+            <generator class="identity"/>
+        </id>
+        <property name="name" type="string">
+            <column length="40" name="Name"/>
+        </property>
+        <property name="surname" type="string">
+            <column length="40" name="Surname"/>
+        </property>
+        <property name="password" type="string">
+            <column length="40" name="Password"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="students" table="student">
+            <key>
+                <column name="UserId" not-null="true"/>
+            </key>
+            <one-to-many class="entities.Student"/>
+        </set>
+        <one-to-one class="entities.Professor" name="professor"/>
+    </class>
+</hibernate-mapping>
