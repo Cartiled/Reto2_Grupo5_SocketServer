@@ -1,7 +1,9 @@
 package com.Reto2.RetoServer.SocketIO;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.Reto2.RetoServer.Config.Events;
 import com.Reto2.RetoServer.Model.MessageInput;
@@ -61,9 +63,13 @@ public class SocketIOModule {
 			// We access to database and... we get a bunch of people
 			List<Student> students = new ArrayList<Student>();
 			
-			students.add(new Student("21308A", "asdafa", "surname",  "dsafaxc","adjafasad@gmail.com", 2, 2, true));
-			students.add(new Student("3213aP", "njdfsa", "surname",  "dsado4192af","msakfa@gmail.com", 7, 2, true));
-			students.add(new Student("1374143O", "sdajfasd", "surname",  "dsabvd","posajdf@gmail.com", 1, 2, true));
+			
+		
+			
+			
+			
+			
+			
 
 			// We parse the answer into JSON
 			String answerMessage = new Gson().toJson(students);
@@ -89,10 +95,39 @@ public class SocketIOModule {
 
 			// We access to database and...
 			// Let's say it answers with this...
-			Student student = new Student("931745P", userName, "surname", "afjad@gmail.com", "dsafaf", 5, 2, true);
-
+			
 			// We parse the answer into JSON
-			String answerMessage = gson.toJson(student);
+			Student newStudent = new Student();
+			
+			
+			
+			Client newClient = new Client();
+			newClient.setUserId(2);
+			newClient.setName("dsafa");
+			newClient.setPassword("pass");
+			newClient.setSurname("surName");
+			
+			StudentId newStudentId = new StudentId();
+			newStudentId.setUserId(2);
+			newStudentId.setIdCourse(1);
+			
+			MatriculationId matriculationId = new MatriculationId();
+			matriculationId.setMatriculationId(2);
+			matriculationId.setUserId(2);
+			
+			Matriculation matriculation = new Matriculation();
+			matriculation.setCourses(null);
+			matriculation.setId(matriculationId);
+			matriculation.setDate(null);
+		
+			newStudent.setId(newStudentId);
+			newStudent.setClient(newClient);
+			Set<Matriculation> matriculations = new HashSet<>();  
+			matriculations.add(matriculation);
+			newStudent.setMatriculations(matriculations);
+			newStudent.setYear((Character)'1');
+			
+			String answerMessage = gson.toJson(newStudent);
 
 			// ... and we send it back to the client inside a MessageOutput
 			MessageOutput messageOutput = new MessageOutput(answerMessage);

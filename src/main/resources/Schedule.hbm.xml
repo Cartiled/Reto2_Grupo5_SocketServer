@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 16 ene 2025, 17:35:06 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="entities.Schedule" optimistic-lock="none" table="schedule">
+        <composite-id class="entities.ScheduleId" name="id">
+            <key-property name="scheduleId" type="int">
+                <column name="ScheduleID"/>
+            </key-property>
+            <key-property name="userId" type="int">
+                <column name="UserId"/>
+            </key-property>
+        </composite-id>
+        <property name="day" type="java.lang.Integer">
+            <column name="Day"/>
+        </property>
+        <property name="week" type="java.lang.Integer">
+            <column name="week"/>
+        </property>
+        <property name="tipoDato" type="string">
+            <column length="40" name="tipoDato"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="courses" table="course">
+            <key>
+                <column name="UserId" not-null="true"/>
+            </key>
+            <one-to-many class="entities.Course"/>
+        </set>
+    </class>
+</hibernate-mapping>

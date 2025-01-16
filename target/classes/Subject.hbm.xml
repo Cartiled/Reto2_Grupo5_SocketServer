@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 16 ene 2025, 17:35:06 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="entities.Subject" optimistic-lock="none" table="subject">
+        <composite-id class="entities.SubjectId" name="id">
+            <key-property name="courseId" type="int">
+                <column name="CourseId"/>
+            </key-property>
+            <key-property name="subjectId" type="int">
+                <column name="SubjectID"/>
+            </key-property>
+            <key-property name="userId" type="int">
+                <column name="UserID"/>
+            </key-property>
+        </composite-id>
+        <property name="subjectName" type="string">
+            <column length="40" name="SubjectName"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="courses" table="course">
+            <key>
+                <column name="CourseID" not-null="true"/>
+            </key>
+            <one-to-many class="entities.Course"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 16 ene 2025, 17:35:06 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="entities.Course" optimistic-lock="none" table="course">
+        <composite-id class="entities.CourseId" name="id">
+            <key-property name="courseId" type="int">
+                <column name="CourseID"/>
+            </key-property>
+            <key-property name="scheduleId" type="int">
+                <column name="ScheduleID"/>
+            </key-property>
+            <key-property name="userId" type="int">
+                <column name="UserId"/>
+            </key-property>
+        </composite-id>
+        <many-to-one class="entities.Schedule" fetch="select" insert="false" name="matriculation" update="false">
+            <column name="UserId" not-null="true"/>
+        </many-to-one>
+        <many-to-one class="entities.Subject" fetch="select" insert="false" name="subject" update="false">
+            <column name="CourseID" not-null="true"/>
+        </many-to-one>
+        <property name="title" type="string">
+            <column length="40" name="Title"/>
+        </property>
+        <property name="email" type="string">
+            <column length="40" name="Email"/>
+        </property>
+        <property name="description" type="string">
+            <column length="40" name="Description"/>
+        </property>
+    </class>
+</hibernate-mapping>
