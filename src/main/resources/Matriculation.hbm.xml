@@ -1,26 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 16 ene 2025, 17:35:06 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17 ene 2025, 15:37:14 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class catalog="reto2grupo5" name="entities.Matriculation" optimistic-lock="none" table="matriculation">
-        <composite-id class="entities.MatriculationId" name="id">
-            <key-property name="matriculationId" type="int">
-                <column name="MatriculationID"/>
-            </key-property>
-            <key-property name="userId" type="int">
-                <column name="UserId"/>
-            </key-property>
-        </composite-id>
-        <many-to-one class="entities.Student" fetch="select" insert="false" name="student" update="false">
-            <column name="UserId" not-null="true"/>
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Matriculation" optimistic-lock="none" table="matriculation">
+        <id name="matriculationId" type="java.lang.Integer">
+            <column name="MatriculationID"/>
+            <generator class="identity"/>
+        </id>
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Student" fetch="select" name="student">
+            <column name="UserId"/>
         </many-to-one>
-        <property name="date" type="date">
-            <column length="10" name="Date"/>
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Course" fetch="select" name="course">
+            <column name="CourseId"/>
+        </many-to-one>
+        <property name="matriculationDate" type="date">
+            <column length="10" name="matriculationDate" not-null="true"/>
         </property>
-        <set fetch="select" inverse="true" lazy="true" name="courses" table="course">
-            <key>
-                <column name="UserId" not-null="true"/>
-            </key>
-            <one-to-many class="entities.Course"/>
-        </set>
     </class>
 </hibernate-mapping>

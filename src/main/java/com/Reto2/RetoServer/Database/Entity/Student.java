@@ -1,5 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-// Generated 16 ene 2025, 17:35:05 by Hibernate Tools 6.5.1.Final
+// Generated 17 ene 2025, 15:37:13 by Hibernate Tools 6.5.1.Final
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,35 +12,35 @@ public class Student implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private StudentId id;
+	private static final long serialVersionUID = 2782810258266052781L;
+	private int userId;
 	private Client client;
-	private Character year;
-	private Boolean intensiveDual;
-	private Set matriculation = new HashSet(0);
+	private char userYear;
+	private boolean intensiveDual;
+	private Set matriculations = new HashSet(0);
 
 	public Student() {
 	}
 
-	public Student(StudentId id, Client client) {
-		this.id = id;
+	public Student(Client client, char userYear, boolean intensiveDual) {
 		this.client = client;
-	}
-
-	public Student(StudentId id, Client client, Character year, Boolean intensiveDual, Set matriculations) {
-		this.id = id;
-		this.client = client;
-		this.year = year;
+		this.userYear = userYear;
 		this.intensiveDual = intensiveDual;
-		this.matriculation = matriculations;
 	}
 
-	public StudentId getId() {
-		return this.id;
+	public Student(Client client, char userYear, boolean intensiveDual, Set matriculations) {
+		this.client = client;
+		this.userYear = userYear;
+		this.intensiveDual = intensiveDual;
+		this.matriculations = matriculations;
 	}
 
-	public void setId(StudentId id) {
-		this.id = id;
+	public int getUserId() {
+		return this.userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	public Client getClient() {
@@ -51,28 +51,28 @@ public class Student implements java.io.Serializable {
 		this.client = client;
 	}
 
-	public Character getYear() {
-		return this.year;
+	public char getUserYear() {
+		return this.userYear;
 	}
 
-	public void setYear(Character year) {
-		this.year = year;
+	public void setUserYear(char userYear) {
+		this.userYear = userYear;
 	}
 
-	public Boolean getIntensiveDual() {
+	public boolean isIntensiveDual() {
 		return this.intensiveDual;
 	}
 
-	public void setIntensiveDual(Boolean intensiveDual) {
+	public void setIntensiveDual(boolean intensiveDual) {
 		this.intensiveDual = intensiveDual;
 	}
 
 	public Set getMatriculations() {
-		return this.matriculation;
+		return this.matriculations;
 	}
 
-	public void setMatriculations(Set matriculation) {
-		this.matriculation = matriculation;
+	public void setMatriculations(Set matriculations) {
+		this.matriculations = matriculations;
 	}
 
 }

@@ -1,5 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-// Generated 16 ene 2025, 17:35:05 by Hibernate Tools 6.5.1.Final
+// Generated 17 ene 2025, 15:37:13 by Hibernate Tools 6.5.1.Final
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,8 +12,8 @@ public class Professor implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private Integer userId;
+	private static final long serialVersionUID = 29662681295181430L;
+	private int userId;
 	private Client client;
 	private Set assistants = new HashSet(0);
 	private Set reunions = new HashSet(0);
@@ -31,11 +31,11 @@ public class Professor implements java.io.Serializable {
 		this.reunions = reunions;
 	}
 
-	public Integer getUserId() {
+	public int getUserId() {
 		return this.userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(int userId) {
 		this.userId = userId;
 	}
 

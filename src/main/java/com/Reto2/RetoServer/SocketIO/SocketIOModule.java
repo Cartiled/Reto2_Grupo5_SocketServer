@@ -68,44 +68,11 @@ public class SocketIOModule {
 			System.out.println("Client from " + client.getRemoteAddress() + " wants to getAll");
 
 			// We access to database and... we get a bunch of people
-			List<Student> students = new ArrayList<Student>();
-			
-			
-			Student newStudent = new Student();
-			
-			
-			
-			Client newClient = new Client();
-			newClient.setUserId(2);
-			newClient.setName("dsafa");
-			newClient.setPassword("pass");
-			newClient.setSurname("surName");
-			
-			StudentId newStudentId = new StudentId();
-			newStudentId.setUserId(2);
-			newStudentId.setIdCourse(1);
-			
-			MatriculationId matriculationId = new MatriculationId();
-			matriculationId.setMatriculationId(2);
-			matriculationId.setUserId(2);
-			
-			Matriculation matriculation = new Matriculation();
-			matriculation.setCourses(null);
-			matriculation.setId(matriculationId);
-			matriculation.setDate(null);
+			List<Client> students = new ArrayList<Client>();
+			Client newClient = sendClient();
+			System.out.println(newClient.getUserName());
 		
-			newStudent.setId(newStudentId);
-			newStudent.setClient(newClient);
-			Set<Matriculation> matriculations = new HashSet<>();  
-			matriculations.add(matriculation);
-			newStudent.setMatriculations(matriculations);
-			newStudent.setYear((Character)'1');
-			
-			students.add(newStudent);
-			
-			
-			
-
+			students.add(newClient);
 			// We parse the answer into JSON
 			String answerMessage = new Gson().toJson(students);
 
@@ -162,6 +129,13 @@ public class SocketIOModule {
 		public void start() {
 			server.start();
 			System.out.println("Server started...");
+			Client newClient = sendClient();
+			System.out.println(newClient.getUserId());
+			System.out.println(newClient.getUserName());
+			System.out.println(newClient.getSurname());
+			System.out.println(newClient.getPass());
+			
+			
 		}
 
 		public void stop() {
@@ -169,12 +143,11 @@ public class SocketIOModule {
 			System.out.println("Server stopped");
 		}
 		public Client sendClient() {
-			String hql = "from Client where Surname = Doe";
+			String hql = "from Client where userName = 'John'";
 			Client client = new Client();
 			Query<?> q = session.createQuery(hql);
 			List<?> filas = q.list();
-			System.out.println(filas.size());
-			
+		
 			for(int i=0; i < filas.size(); i++) {
 				client = (Client) filas.get(i);
 			}
