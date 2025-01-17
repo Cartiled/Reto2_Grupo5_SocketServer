@@ -1,29 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 16 ene 2025, 17:35:06 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 17 ene 2025, 15:37:14 by Hibernate Tools 6.5.1.Final -->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class catalog="reto2grupo5" name="entities.Student" optimistic-lock="none" table="student">
-        <composite-id class="entities.StudentId" name="id">
-            <key-property name="idCourse" type="int">
-                <column name="IdCourse"/>
-            </key-property>
-            <key-property name="userId" type="int">
-                <column name="UserId"/>
-            </key-property>
-        </composite-id>
-        <many-to-one class="entities.Client" fetch="select" insert="false" name="client" update="false">
-            <column name="UserId" not-null="true"/>
-        </many-to-one>
-        <property name="year" type="java.lang.Character">
-            <column length="1" name="Year"/>
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Student" optimistic-lock="none" table="student">
+        <id name="userId" type="int">
+            <column name="UserId"/>
+            <generator class="foreign">
+                <param name="property">client</param> <!-- 指定外键关联的属性 -->
+            </generator>
+        </id>
+        <one-to-one class="com.Reto2.RetoServer.Database.Entity.Client" constrained="true" name="client"/>
+        <property name="userYear" type="char">
+            <column length="1" name="UserYear" not-null="true"/>
         </property>
-        <property name="intensiveDual" type="java.lang.Boolean">
-            <column name="IntensiveDual"/>
+        <property name="intensiveDual" type="boolean">
+            <column name="IntensiveDual" not-null="true"/>
         </property>
         <set fetch="select" inverse="true" lazy="true" name="matriculations" table="matriculation">
             <key>
-                <column name="UserId" not-null="true"/>
+                <column name="UserId"/>
             </key>
-            <one-to-many class="entities.Matriculation"/>
+            <one-to-many class="com.Reto2.RetoServer.Database.Entity.Matriculation"/>
         </set>
     </class>
 </hibernate-mapping>

@@ -1,5 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-// Generated 16 ene 2025, 17:35:05 by Hibernate Tools 6.5.1.Final
+// Generated 17 ene 2025, 15:37:13 by Hibernate Tools 6.5.1.Final
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,50 +12,61 @@ public class Schedule implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private ScheduleId id;
-	private Integer day;
-	private Integer week;
+	private static final long serialVersionUID = 8817143435324917310L;
+	private Integer scheduleId;
+	private Client client;
+	private int scheduleDay;
+	private int scheduleWeek;
 	private String tipoDato;
 	private Set courses = new HashSet(0);
 
 	public Schedule() {
 	}
 
-	public Schedule(ScheduleId id) {
-		this.id = id;
+	public Schedule(int scheduleDay, int scheduleWeek, String tipoDato) {
+		this.scheduleDay = scheduleDay;
+		this.scheduleWeek = scheduleWeek;
+		this.tipoDato = tipoDato;
 	}
 
-	public Schedule(ScheduleId id, Integer day, Integer week, String tipoDato, Set courses) {
-		this.id = id;
-		this.day = day;
-		this.week = week;
+	public Schedule(Client client, int scheduleDay, int scheduleWeek, String tipoDato, Set courses) {
+		this.client = client;
+		this.scheduleDay = scheduleDay;
+		this.scheduleWeek = scheduleWeek;
 		this.tipoDato = tipoDato;
 		this.courses = courses;
 	}
 
-	public ScheduleId getId() {
-		return this.id;
+	public Integer getScheduleId() {
+		return this.scheduleId;
 	}
 
-	public void setId(ScheduleId id) {
-		this.id = id;
+	public void setScheduleId(Integer scheduleId) {
+		this.scheduleId = scheduleId;
 	}
 
-	public Integer getDay() {
-		return this.day;
+	public Client getClient() {
+		return this.client;
 	}
 
-	public void setDay(Integer day) {
-		this.day = day;
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
-	public Integer getWeek() {
-		return this.week;
+	public int getScheduleDay() {
+		return this.scheduleDay;
 	}
 
-	public void setWeek(Integer week) {
-		this.week = week;
+	public void setScheduleDay(int scheduleDay) {
+		this.scheduleDay = scheduleDay;
+	}
+
+	public int getScheduleWeek() {
+		return this.scheduleWeek;
+	}
+
+	public void setScheduleWeek(int scheduleWeek) {
+		this.scheduleWeek = scheduleWeek;
 	}
 
 	public String getTipoDato() {
