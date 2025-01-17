@@ -1,9 +1,7 @@
 package com.Reto2.RetoServer.SocketIO;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,9 +19,8 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-
 public class SocketIOModule {
-	
+
 	private SocketIOServer server = null;
 	SessionFactory sesion = HibernateUtil.getSessionFactory();
 	Session session = sesion.openSession();
@@ -41,7 +38,37 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_GET_ALL.value, MessageInput.class, this.getAll());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
 	}
-	
+
+	private DataListener<MessageInput> login() {
+		return ((client, data, ackSender) -> {
+
+			try {
+				System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+
+				String message = data.getMessage();
+				Gson gson = new Gson();
+				JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
+
+				String userName = jsonObject.get("message").getAsString();
+
+				System.out.println("userName: " + userName);
+				
+				Client newClient = sendClient();
+				System.out.println("newClient: " + newClient.toString());
+				String answerMessage = gson.toJson(newClient);
+				
+				System.out.println("answerMessage: " + answerMessage);
+				
+				MessageOutput messageOutput = new MessageOutput(answerMessage);
+				client.sendEvent(Events.ON_LOGIN_ANSWER.value, messageOutput);
+				
+				System.out.println("event sent!!");
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		});
+	}
+
 	private DataListener<MessageInput> logout() {
 		return ((client, data, ackSender) -> {
 			// This time, we simply write the message in data
@@ -64,49 +91,24 @@ public class SocketIOModule {
 
 	private DataListener<MessageInput> getAll() {
 		return ((client, data, ackSender) -> {
-			// This time, we simply write the message in data
-			System.out.println("Client from " + client.getRemoteAddress() + " wants to getAll");
+			try {
+				// This time, we simply write the message in data
+				System.out.println("Client from " + client.getRemoteAddress() + " wants to getAll");
 
-			// We access to database and... we get a bunch of people
-			List<Client> students = new ArrayList<Client>();
-			Client newClient = sendClient();
-			System.out.println(newClient.getUserName());
-		
-			students.add(newClient);
-			// We parse the answer into JSON
-			String answerMessage = new Gson().toJson(students);
+				// We access to database and... we get a bunch of people
+				List<Client> students = new ArrayList<Client>();
+				Client newClient = sendClient();
+				students.add(newClient);
+				// We parse the answer into JSON
+				String answerMessage = new Gson().toJson(students);
 
-			// ... and we send it back to the client inside a MessageOutput
-			MessageOutput messageOutput = new MessageOutput(answerMessage);
-			client.sendEvent(Events.ON_GET_ALL_ANSWER.value, messageOutput);
-		});
-	}
-
-	private DataListener<MessageInput> login() {
-		return ((client, data, ackSender) -> {
-			System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
-
-			// The JSON message from MessageInput
-			String message = data.getMessage();
-
-			// We parse the JSON into an JsonObject
-			// The JSON should be something like this: {"message": "patata"}
-			Gson gson = new Gson();
-			JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
-			String userName = jsonObject.get("message").getAsString();
-
-			// We access to database and...
-			// Let's say it answers with this...
-//			Student student = new Student("931745P", userName, "surname", "afjad@gmail.com", "dsafaf", 5, 2, true);
-			
-			Client newclient = sendClient();
-			
-			// We parse the answer into JSON
-			String answerMessage = gson.toJson(newclient);
-
-			// ... and we send it back to the client inside a MessageOutput
-			MessageOutput messageOutput = new MessageOutput(answerMessage);
-			client.sendEvent(Events.ON_LOGIN_ANSWER.value, messageOutput);
+				// ... and we send it back to the client inside a MessageOutput
+				MessageOutput messageOutput = new MessageOutput(answerMessage);
+				System.out.println(messageOutput.toString());
+				client.sendEvent(Events.ON_GET_ALL_ANSWER.value, messageOutput);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		});
 	}
 
@@ -123,34 +125,34 @@ public class SocketIOModule {
 			System.out.println(client.getRemoteAddress() + " disconected from server");
 		});
 	}
-	
-	// Server control 
 
-		public void start() {
-			server.start();
-			System.out.println("Server started...");
-			Client newClient = sendClient();
-			System.out.println(newClient.getUserId());
-			System.out.println(newClient.getUserName());
-			System.out.println(newClient.getSurname());
-			System.out.println(newClient.getPass());
-			
-			
-		}
+	// Server control
 
-		public void stop() {
-			server.stop();
-			System.out.println("Server stopped");
+	public void start() {
+		server.start();
+		System.out.println("Server started...");
+		Client newClient = sendClient();
+
+		System.out.println(newClient.getUserId());
+		System.out.println(newClient.getUserName());
+		System.out.println(newClient.getSurname());
+		System.out.println(newClient.getPass());
+	}
+
+	public void stop() {
+		server.stop();
+		System.out.println("Server stopped");
+	}
+
+	public Client sendClient() {
+		String hql = "from Client where userName = 'John'";
+		Client client = new Client();
+		Query<?> q = session.createQuery(hql);
+		List<?> filas = q.list();
+
+		for (int i = 0; i < filas.size(); i++) {
+			client = (Client) filas.get(i);
 		}
-		public Client sendClient() {
-			String hql = "from Client where userName = 'John'";
-			Client client = new Client();
-			Query<?> q = session.createQuery(hql);
-			List<?> filas = q.list();
-		
-			for(int i=0; i < filas.size(); i++) {
-				client = (Client) filas.get(i);
-			}
-			return client;
-		} 
+		return client;
+	}
 }

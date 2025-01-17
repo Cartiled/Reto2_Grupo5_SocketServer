@@ -11,10 +11,8 @@ import java.util.Set;
 
 public class Client implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -686199008108205020L;
+	private static final long serialVersionUID = 1L;
+	
 	private Integer userId;
 	private String userName;
 	private String surname;
@@ -95,6 +93,12 @@ public class Client implements java.io.Serializable {
 
 	public void setSchedules(Set schedules) {
 		this.schedules = schedules;
+	}
+
+	@Override
+	public String toString() {
+		return "Client [userId=" + userId + ", userName=" + userName + ", surname=" + surname + ", pass=" + pass
+				+ ", student=" + student + ", professor=" + professor + ", schedules=" + schedules + "]";
 	}
 
 }

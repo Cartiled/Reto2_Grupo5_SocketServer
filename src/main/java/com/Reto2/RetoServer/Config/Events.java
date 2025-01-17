@@ -13,4 +13,4 @@ public enum Events {
 	private Events(String value) {
 		this.value = value;
 	}
-}
+}	
