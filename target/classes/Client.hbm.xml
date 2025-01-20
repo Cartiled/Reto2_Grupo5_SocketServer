@@ -15,6 +15,12 @@
         <property name="pass" type="string">
             <column length="40" name="Pass" not-null="true"/>
         </property>
+          <property name="userType" type="boolean">
+            <column  name="userType" not-null="true"/>
+        </property>
+          <property name="registered" type="boolean">
+            <column  name="registered" not-null="false"/>
+        </property>
         <one-to-one class="com.Reto2.RetoServer.Database.Entity.Student" name="student"/>
         <one-to-one class="com.Reto2.RetoServer.Database.Entity.Professor" name="professor"/>
         <set fetch="select" inverse="true" lazy="true" name="schedules" table="schedule">

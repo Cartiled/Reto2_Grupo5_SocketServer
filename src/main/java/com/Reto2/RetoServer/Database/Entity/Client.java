@@ -26,6 +26,10 @@ public class Client implements java.io.Serializable {
 	 @Expose
 	private String pass;
 	 @Expose
+	private Boolean userType;
+	 @Expose
+	private Boolean registered;
+	 @Expose
 	private Student student;
 	 @Expose
 	private Professor professor;
@@ -41,10 +45,12 @@ public class Client implements java.io.Serializable {
 		this.pass = pass;
 	}
 
-	public Client(String userName, String surname, String pass, Student student, Professor professor, Set<Schedule> schedules) {
+	public Client(String userName, String surname, String pass, boolean userType, boolean registered, Student student, Professor professor, Set<Schedule> schedules) {
 		this.userName = userName;
 		this.surname = surname;
 		this.pass = pass;
+		this.registered = registered;
+		this.userType = userType;
 		this.student = student;
 		this.professor = professor;
 		this.schedules = schedules;
@@ -81,6 +87,23 @@ public class Client implements java.io.Serializable {
 	public void setPass(String pass) {
 		this.pass = pass;
 	}
+	
+
+	public Boolean getUserType() {
+		return userType;
+	}
+
+	public void setUserType(Boolean userType) {
+		this.userType = userType;
+	}
+
+	public Boolean getRegistered() {
+		return registered;
+	}
+
+	public void setRegistered(Boolean registered) {
+		this.registered = registered;
+	}
 
 	public Student getStudent() {
 		return this.student;
@@ -98,7 +121,7 @@ public class Client implements java.io.Serializable {
 		this.professor = professor;
 	}
 
-	public Set getSchedules() {
+	public Set<Schedule>  getSchedules() {
 		return this.schedules;
 	}
 
@@ -109,8 +132,11 @@ public class Client implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return "Client [userId=" + userId + ", userName=" + userName + ", surname=" + surname + ", pass=" + pass
-				+ ", student=" + student + ", professor=" + professor + ", schedules=" + schedules + "]";
+				+ ", userType=" + userType + ", registerd=" + registered + ", student=" + student + ", professor="
+				+ professor + ", schedules=" + schedules + "]";
 	}
+
+
 	
 
 }

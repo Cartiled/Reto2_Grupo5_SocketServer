@@ -53,20 +53,21 @@ public class SocketIOModule {
 
 	        
 	            if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
-	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Invalid data format");
-	                System.out.println("Invalid login request: Missing required fields");
+	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+	                System.out.println("Datos incorrecto");
 	            }
 
 	            String userName = jsonObject.get("message").getAsString();
 	            String userPass = jsonObject.get("userPass").getAsString();
+	            
+	            Client loginClient = sendClient(userName);
+	            String name = loginClient.getUserName();
+	            String pass = loginClient.getPass();
+	         
 
-	            String name = sendClient().getUserName();
-	            String pass = sendClient().getPass();
-	            System.out.println(pass);
-
-	   
 	            if (userName.equals(name) && userPass.equals(pass)) {
 	                client.sendEvent(Events.ON_LOGIN_SUCCESS.value, "Login correcto");
+	                System.out.println(loginClient.toString());
 	                System.out.println("El usuario ha sido logueado correctamente: " + userName);
 	            } else {
 	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
@@ -128,7 +129,6 @@ public class SocketIOModule {
 			System.out.println("New connection, Client: " + client.getRemoteAddress());
 		});
 	}
-
 	private DisconnectListener onDisconnect() {
 		return (client -> {
 			client.leaveRoom("default-room");
@@ -141,11 +141,7 @@ public class SocketIOModule {
 	public void start() {
 		server.start();
 		System.out.println("Server started...");
-		Client client = sendClient();
-		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		String answerMessage = gson.toJson(client);
-
-		System.out.println("answerMessage: " + answerMessage);
+		
 		
 	}
 
@@ -154,9 +150,10 @@ public class SocketIOModule {
 		System.out.println("Server stopped");
 	}
 
-	public Client sendClient() {
-		String hql = "from Client where userName = 'John'";
+	public Client sendClient(String loginUserName) {
+		String hql = "from Client where userName  =:loginUserName";
 		Query<Client> query = session.createQuery(hql, Client.class);
+		query.setParameter("loginUserName", loginUserName);
 		Client client = null;
 		try {
 			client = query.getSingleResult();
@@ -170,8 +167,7 @@ public class SocketIOModule {
 		String hql = "Select * from Client";
 		Client client = new Client();
 		Query<?> q = session.createQuery(hql);
-		List<?> filas = q.list();
-	
+		List<?> filas = q.list();	
 		for(int i=0; i < filas.size(); i++) {
 			client = (Client) filas.get(i);
 			clients.add(client);
