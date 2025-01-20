@@ -46,4 +46,10 @@ public class Assistant implements java.io.Serializable {
 		this.reunion = reunion;
 	}
 
+	@Override
+	public String toString() {
+		return "Assistant [assistantId=" + assistantId + ", professor=" + professor + ", reunion=" + reunion + "]";
+	}
+	
+
 }

@@ -16,8 +16,13 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
+import jakarta.persistence.NoResultException;
 
 public class SocketIOModule {
 
@@ -34,39 +39,45 @@ public class SocketIOModule {
 		server.addDisconnectListener(onDisconnect());
 
 		// Custom events
-		server.addEventListener(Events.ON_LOGIN.value, MessageInput.class, this.login());
+		server.addEventListener(Events.ON_LOGIN.value, String.class, this.login());
 		server.addEventListener(Events.ON_GET_ALL.value, MessageInput.class, this.getAll());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
 	}
 
-	private DataListener<MessageInput> login() {
-		return ((client, data, ackSender) -> {
+	private DataListener<String> login() {
+	    return ((client, data, ackSender) -> {
+	        try {
+	            System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+	            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+	            JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
-			try {
-				System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+	        
+	            if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
+	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Invalid data format");
+	                System.out.println("Invalid login request: Missing required fields");
+	            }
 
-				String message = data.getMessage();
-				Gson gson = new Gson();
-				JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
+	            String userName = jsonObject.get("message").getAsString();
+	            String userPass = jsonObject.get("userPass").getAsString();
 
-				String userName = jsonObject.get("message").getAsString();
+	            String name = sendClient().getUserName();
+	            String pass = sendClient().getPass();
+	            System.out.println(pass);
 
-				System.out.println("userName: " + userName);
-				
-				Client newClient = sendClient();
-				System.out.println("newClient: " + newClient.toString());
-				String answerMessage = gson.toJson(newClient);
-				
-				System.out.println("answerMessage: " + answerMessage);
-				
-				MessageOutput messageOutput = new MessageOutput(answerMessage);
-				client.sendEvent(Events.ON_LOGIN_ANSWER.value, messageOutput);
-				
-				System.out.println("event sent!!");
-			} catch (Exception e) {
-				System.out.println(e);
-			}
-		});
+	   
+	            if (userName.equals(name) && userPass.equals(pass)) {
+	                client.sendEvent(Events.ON_LOGIN_SUCCESS.value, "Login correcto");
+	                System.out.println("El usuario ha sido logueado correctamente: " + userName);
+	            } else {
+	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
+	                System.out.println("El usuario no ha podido loguearse: " + userName);
+	            }
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+	        }
+	    });
 	}
 
 	private DataListener<MessageInput> logout() {
@@ -96,15 +107,14 @@ public class SocketIOModule {
 				System.out.println("Client from " + client.getRemoteAddress() + " wants to getAll");
 
 				// We access to database and... we get a bunch of people
-				List<Client> students = new ArrayList<Client>();
-				Client newClient = sendClient();
-				students.add(newClient);
+				List<Client> clients = getAllClient();
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 				// We parse the answer into JSON
-				String answerMessage = new Gson().toJson(students);
+				String answerMessage = gson.toJson(clients);
 
 				// ... and we send it back to the client inside a MessageOutput
 				MessageOutput messageOutput = new MessageOutput(answerMessage);
-				System.out.println(messageOutput.toString());
+				System.out.println(messageOutput);
 				client.sendEvent(Events.ON_GET_ALL_ANSWER.value, messageOutput);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -131,12 +141,12 @@ public class SocketIOModule {
 	public void start() {
 		server.start();
 		System.out.println("Server started...");
-		Client newClient = sendClient();
+		Client client = sendClient();
+		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		String answerMessage = gson.toJson(client);
 
-		System.out.println(newClient.getUserId());
-		System.out.println(newClient.getUserName());
-		System.out.println(newClient.getSurname());
-		System.out.println(newClient.getPass());
+		System.out.println("answerMessage: " + answerMessage);
+		
 	}
 
 	public void stop() {
@@ -146,13 +156,27 @@ public class SocketIOModule {
 
 	public Client sendClient() {
 		String hql = "from Client where userName = 'John'";
+		Query<Client> query = session.createQuery(hql, Client.class);
+		Client client = null;
+		try {
+			client = query.getSingleResult();
+		} catch (NoResultException e) {
+			System.out.println("No client found with the username 'John'.");
+		}
+		return client;
+	}
+	public List<Client> getAllClient(){
+		List<Client> clients = new ArrayList<Client>();
+		String hql = "Select * from Client";
 		Client client = new Client();
 		Query<?> q = session.createQuery(hql);
 		List<?> filas = q.list();
-
-		for (int i = 0; i < filas.size(); i++) {
+	
+		for(int i=0; i < filas.size(); i++) {
 			client = (Client) filas.get(i);
+			clients.add(client);
 		}
-		return client;
+		return clients;
+		
 	}
 }

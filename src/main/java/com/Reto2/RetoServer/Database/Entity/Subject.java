@@ -46,4 +46,10 @@ public class Subject implements java.io.Serializable {
 		this.subjectName = subjectName;
 	}
 
+	@Override
+	public String toString() {
+		return "Subject [subjectId=" + subjectId + ", course=" + course + ", subjectName=" + subjectName + "]";
+	}
+	
+
 }
