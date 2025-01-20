@@ -62,4 +62,10 @@ public class Matriculation implements java.io.Serializable {
 		this.matriculationDate = matriculationDate;
 	}
 
+	@Override
+	public String toString() {
+		return "Matriculation [matriculationId=" + matriculationId + ", student=" + student + ", course=" + course
+				+ ", matriculationDate=" + matriculationDate + "]";
+	}
+	
 }

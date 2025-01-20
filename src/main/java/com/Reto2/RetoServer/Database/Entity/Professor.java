@@ -38,7 +38,8 @@ public class Professor implements java.io.Serializable {
 	public void setUserId(int userId) {
 		this.userId = userId;
 	}
-
+	
+	
 	public Client getClient() {
 		return this.client;
 	}
