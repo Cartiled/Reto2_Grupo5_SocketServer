@@ -7,7 +7,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 
 public class APP {
 	
-	private static final String HOST_NAME = "localhost";
+	private static final String HOST_NAME = "0.0.0.0";
 	private static final int PORT = 2888;
 
 
