@@ -12,8 +12,20 @@
         <property name="surname" type="string">
             <column length="40" name="Surname" not-null="true"/>
         </property>
+        <property name="secondsurname" type="string">
+            <column length="40" name="secondsurname" not-null="true"/>
+        </property>
         <property name="pass" type="string">
             <column length="40" name="Pass" not-null="true"/>
+        </property>
+         <property name="dni" type="string">
+            <column length="9" name="dni" not-null="true"/>
+        </property>
+         <property name="direction" type="string">
+            <column length="40" name="direction" not-null="true"/>
+        </property>
+          <property name="telephone" type="int">
+            <column name="telephone" not-null="true"/>
         </property>
           <property name="userType" type="boolean">
             <column  name="userType" not-null="true"/>
