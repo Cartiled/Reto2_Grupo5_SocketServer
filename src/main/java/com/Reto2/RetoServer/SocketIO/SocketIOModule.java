@@ -68,15 +68,22 @@ public class SocketIOModule {
 	            String name = loginClient.getUserName();
 	            String pass = loginClient.getPass();
 	         
-
+	          if(loginClient.getRegistered()==true) {
+	        	  System.out.println("usuario registrado");
 	            if (userName.equals(name) && userPass.equals(pass)) {
-	                client.sendEvent(Events.ON_LOGIN_SUCCESS.value, "Login correcto");
 	                System.out.println(loginClient.toString());
+	                String answerMessage = gson.toJson(loginClient);
+	                MessageOutput messageOutput = new MessageOutput(answerMessage);
+	                client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
 	                System.out.println("El usuario ha sido logueado correctamente: " + userName);
 	            } else {
 	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
 	                System.out.println("El usuario no ha podido loguearse: " + userName);
 	            }
+	          }else {
+	        	  System.out.println("usuario no registrado");
+	        	  client.sendEvent(Events.ON_REGISTER.value,"Registrate porfavor");
+	          }
 
 	        } catch (Exception e) {
 	            e.printStackTrace();

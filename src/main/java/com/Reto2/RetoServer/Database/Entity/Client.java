@@ -24,7 +24,15 @@ public class Client implements java.io.Serializable {
 	 @Expose
 	private String surname;
 	 @Expose
+	private String secondsurname;
+	 @Expose
 	private String pass;
+	 @Expose
+	private String dni;
+	 @Expose
+	private String direction;
+	 @Expose
+	private int telephone;
 	 @Expose
 	private Boolean userType;
 	 @Expose
@@ -45,10 +53,14 @@ public class Client implements java.io.Serializable {
 		this.pass = pass;
 	}
 
-	public Client(String userName, String surname, String pass, boolean userType, boolean registered, Student student, Professor professor, Set<Schedule> schedules) {
+	public Client(String userName, String surname, String secondsurname,String pass,String dni,String direction,int telephone, boolean userType, boolean registered, Student student, Professor professor, Set<Schedule> schedules) {
 		this.userName = userName;
 		this.surname = surname;
+		this.secondsurname = secondsurname;
 		this.pass = pass;
+		this.dni = dni;
+		this.direction = direction;
+		this.telephone = telephone;
 		this.registered = registered;
 		this.userType = userType;
 		this.student = student;
@@ -129,12 +141,47 @@ public class Client implements java.io.Serializable {
 		this.schedules = schedules;
 	}
 
+	public String getSecondsurname() {
+		return secondsurname;
+	}
+
+	public void setSecondsurname(String secondsurname) {
+		this.secondsurname = secondsurname;
+	}
+
+	public String getDni() {
+		return dni;
+	}
+
+	public void setDni(String dni) {
+		this.dni = dni;
+	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	public int getTelephone() {
+		return telephone;
+	}
+
+	public void setTelephone(int telephone) {
+		this.telephone = telephone;
+	}
+
 	@Override
 	public String toString() {
-		return "Client [userId=" + userId + ", userName=" + userName + ", surname=" + surname + ", pass=" + pass
-				+ ", userType=" + userType + ", registerd=" + registered + ", student=" + student + ", professor="
-				+ professor + ", schedules=" + schedules + "]";
+		return "Client [userId=" + userId + ", userName=" + userName + ", surname=" + surname + ", secondsurname="
+				+ secondsurname + ", pass=" + pass + ", dni=" + dni + ", direction=" + direction + ", telephone="
+				+ telephone + ", userType=" + userType + ", registered=" + registered + ", student=" + student
+				+ ", professor=" + professor + ", schedules=" + schedules + "]";
 	}
+
+	
 
 
 	
