@@ -41,7 +41,11 @@ public class SocketIOModule {
 		// Custom events
 		server.addEventListener(Events.ON_LOGIN.value, String.class, this.login());
 		server.addEventListener(Events.ON_GET_ALL.value, MessageInput.class, this.getAll());
+		server.addEventListener(Events.ON_FILTER_BY_COURSE.value, MessageInput.class, this.filterByCourse());
+		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, MessageInput.class, this.filterByCycle());
+		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, MessageInput.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
+		
 	}
 
 	private DataListener<String> login() {
@@ -99,6 +103,37 @@ public class SocketIOModule {
 
 			System.out.println(userName + " loged out");
 		});
+	}
+	
+	private DataListener<MessageInput> filterBySubject() {
+		 return ((client, data, ackSender) -> {
+		        try {
+		        	
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		            client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+		        }
+		    });
+	}
+
+	private DataListener<MessageInput> filterByCycle() {
+		 return ((client, data, ackSender) -> {
+		        try {
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		            client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+		        }
+		    });
+	}
+
+	private DataListener<MessageInput> filterByCourse() {
+		 return ((client, data, ackSender) -> {
+		        try {
+		        } catch (Exception e) {
+		            e.printStackTrace();
+		            client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+		        }
+		    });
 	}
 
 	private DataListener<MessageInput> getAll() {

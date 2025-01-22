@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-              <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
         <property name="hibernate.connection.password">elorrieta</property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost/reto2grupo5</property>
         <property name="hibernate.connection.username">root</property>
@@ -13,6 +13,7 @@
 		<mapping resource="Matriculation.hbm.xml"/>
         <mapping resource="Course.hbm.xml"/>
         <mapping resource="Student.hbm.xml"/>
+        <mapping resource="Documents.hbm.xml"/>
         <mapping resource="Assistant.hbm.xml"/>
         <mapping resource="Schedule.hbm.xml"/>
         <mapping resource="Professor.hbm.xml"/>
