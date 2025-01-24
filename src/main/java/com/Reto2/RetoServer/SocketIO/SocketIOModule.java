@@ -1,7 +1,13 @@
 package com.Reto2.RetoServer.SocketIO;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.Cipher;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -43,51 +49,105 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_REGISTER_AWNSER.value, String.class, this.register());
 	}
 
-
-
 	private DataListener<String> login() {
-	    return ((client, data, ackSender) -> {
-	        try {
-	            System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
-	            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-	            JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+		return ((client, data, ackSender) -> {
+			try {
+				System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
-	        
-	            if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
-	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
-	                System.out.println("Datos incorrecto");
-	            }
+				if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
+					client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+					System.out.println("Datos incorrecto");
+				}
 
-	            String userName = jsonObject.get("message").getAsString();
-	            String userPass = jsonObject.get("userPass").getAsString();
-	            
-	            Client loginClient = sendClient(userName);
-	            Student student = getStudentByUser(userName);
-	            String name = loginClient.getUserName();
-	            String pass = loginClient.getPass();
-	         
-	          if(loginClient.getRegistered()==true) {
-	        	  System.out.println("usuario registrado");
-	            if (userName.equals(name) && userPass.equals(pass)) {
-	                System.out.println(loginClient.toString());
-	              
-	                String answerMessage = gson.toJson(loginClient);
-	                MessageOutput messageOutput = new MessageOutput(answerMessage);
-	                client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
-	                System.out.println("El usuario ha sido logueado correctamente: " + userName);
-	            } else {
-	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
-	                System.out.println("El usuario no ha podido loguearse: " + userName);
-	            }
-	          }else {
-	        	  System.out.println("usuario no registrado");
-	        	  client.sendEvent(Events.ON_REGISTER.value,"Registrate porfavor");
-	          }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
-	        }
-	    });
+				String userName = jsonObject.get("message").getAsString();
+				String userPass = jsonObject.get("userPass").getAsString();
+
+				Client loginClient = sendClient(userName);
+				Student student = getStudentByUser(userName);
+				String name = loginClient.getUserName();
+				String pass = loginClient.getPass();
+
+				KeyPairGenerator key = KeyPairGenerator.getInstance("RSA");
+				key.initialize(1024);
+				KeyPair keyPair = key.generateKeyPair();
+				PublicKey publicKey = keyPair.getPublic();
+				PrivateKey privateKey = keyPair.getPrivate();
+
+				String msg = pass;
+
+				encriptar(null, publicKey, data);
+				desencriptar(null, privateKey, data);
+
+				byte[] msgEncryptedBytes = encriptar(msg.getBytes(), publicKey, key.getAlgorithm());
+				System.out.println("Texto encriptado -> " + new String(msgEncryptedBytes));
+
+				byte[] msgDecryptedBytes = desencriptar(msgEncryptedBytes, privateKey, key.getAlgorithm());
+				System.out.println("Texto desencriptado -> " + new String(msgDecryptedBytes));
+
+				if (loginClient.getRegistered() == true) {
+					System.out.println("usuario registrado");
+					if (userName.equals(name) && userPass.equals(pass)) {
+						System.out.println(loginClient.toString());
+
+						String answerMessage = gson.toJson(loginClient);
+						MessageOutput messageOutput = new MessageOutput(answerMessage);
+						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
+						System.out.println("El usuario ha sido logueado correctamente: " + userName);
+					} else {
+						client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
+						System.out.println("El usuario no ha podido loguearse: " + userName);
+					}
+				} else {
+					System.out.println("usuario no registrado");
+					client.sendEvent(Events.ON_REGISTER.value, "Registrate porfavor");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+			}
+		});
+	}
+
+	public static byte[] encriptar(byte[] inputBytes, PublicKey publicKey, String algorithm) {
+
+		try {
+
+			/*
+			 * Using getIstance in static to create object with its RSA
+			 */
+			Cipher cipher = Cipher.getInstance(algorithm);
+
+			// Encryps public key
+			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+
+			/*
+			 * Convert text to a inputByte
+			 */
+			return cipher.doFinal(inputBytes);
+
+		} catch (Exception ex) {
+			System.out.print(ex);
+		}
+
+		return null;
+	}
+
+	public static byte[] desencriptar(byte[] inputBytes, PrivateKey privateKey, String algorithm) {
+
+		try {
+
+			Cipher cipher = Cipher.getInstance(algorithm);
+
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			return cipher.doFinal(inputBytes);
+
+		} catch (Exception ex) {
+			System.out.print(ex);
+		}
+
+		return null;
 	}
 
 	private DataListener<MessageInput> logout() {
@@ -109,48 +169,45 @@ public class SocketIOModule {
 			System.out.println(userName + " loged out");
 		});
 	}
-	
+
 	private DataListener<String> register() {
 		return ((client, data, ackSender) -> {
-				System.out.println("Client from " + client.getRemoteAddress() + " wants to register");
-				  Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-				  JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
- 
-		            if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
-		                client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
-		                System.out.println(jsonObject.toString());
-		                System.out.println("Datos incorrecto");
-		            }else {
-		            	System.out.println(jsonObject.toString());
-		            }
-		            String userName = jsonObject.get("username").getAsString();
-		            String userPass = jsonObject.get("userpass").getAsString();
-		            
-		            Client loginClient = sendClient(userName);
-		            String name = loginClient.getUserName();
-		            String pass = loginClient.getPass();
-		            String surname = loginClient.getSurname();
-		            String secondSurname = loginClient.getSecondsurname();
-		            String direction = loginClient.getDirection();
-		            String dni = loginClient.getDni();
-		            int telephone = loginClient.getTelephone();
-		            
-		            Student student = getStudentByUser(userName);
-		            char userCourseYear = student.getUserYear();
-		            Boolean dual = student.isIntensiveDual();
-		            
-		            
-		            if(userPass.equals(pass)) {
-		            	System.out.println("La contraseña es igual que la anterior");
-		            	client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
-		            }else {
-		            	
-		            }
-		            
-			
-			
+			System.out.println("Client from " + client.getRemoteAddress() + " wants to register");
+			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+			JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+
+			if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
+				client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+				System.out.println(jsonObject.toString());
+				System.out.println("Datos incorrecto");
+			} else {
+				System.out.println(jsonObject.toString());
+			}
+			String userName = jsonObject.get("username").getAsString();
+			String userPass = jsonObject.get("userpass").getAsString();
+
+			Client loginClient = sendClient(userName);
+			String name = loginClient.getUserName();
+			String pass = loginClient.getPass();
+			String surname = loginClient.getSurname();
+			String secondSurname = loginClient.getSecondsurname();
+			String direction = loginClient.getDirection();
+			String dni = loginClient.getDni();
+			int telephone = loginClient.getTelephone();
+
+			Student student = getStudentByUser(userName);
+			char userCourseYear = student.getUserYear();
+			Boolean dual = student.isIntensiveDual();
+
+			if (userPass.equals(pass)) {
+				System.out.println("La contraseña es igual que la anterior");
+				client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
+			} else {
+
+			}
+
 		});
-		
+
 	}
 
 	private DataListener<MessageInput> getAll() {
@@ -181,6 +238,7 @@ public class SocketIOModule {
 			System.out.println("New connection, Client: " + client.getRemoteAddress());
 		});
 	}
+
 	private DisconnectListener onDisconnect() {
 		return (client -> {
 			client.leaveRoom("default-room");
@@ -195,8 +253,7 @@ public class SocketIOModule {
 		Course course = getUserCourseByMatriculation(1);
 		System.out.println(course.getTitle());
 		System.out.println("Server started...");
-		
-		
+
 	}
 
 	public void stop() {
@@ -216,7 +273,7 @@ public class SocketIOModule {
 		}
 		return client;
 	}
-	
+
 	public Student getStudentByUser(String registerName) {
 		String hql = "from Student where client.userName =:registerName";
 		Query<Student> query = session.createQuery(hql, Student.class);
@@ -228,9 +285,9 @@ public class SocketIOModule {
 			System.out.println("No client found with the username: " + registerName);
 		}
 		return student;
-		
+
 	}
-	
+
 	public Course getUserCourseByMatriculation(int id) {
 		String hql = "select c from Course c join c.matriculations m join m.student s where s.userId =:id";
 		Query<Course> query = session.createQuery(hql, Course.class);
@@ -242,15 +299,16 @@ public class SocketIOModule {
 			System.out.println("No client found with the username: " + id);
 		}
 		return course;
-		
+
 	}
-	public List<Client> getAllClient(){
+
+	public List<Client> getAllClient() {
 		List<Client> clients = new ArrayList<Client>();
 		String hql = "Select * from Client";
 		Client client = new Client();
 		Query<?> q = session.createQuery(hql);
-		List<?> filas = q.list();	
-		for(int i=0; i < filas.size(); i++) {
+		List<?> filas = q.list();
+		for (int i = 0; i < filas.size(); i++) {
 			client = (Client) filas.get(i);
 			clients.add(client);
 		}
