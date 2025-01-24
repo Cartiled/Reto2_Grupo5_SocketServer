@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 17 ene 2025, 15:37:14 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Subject" optimistic-lock="none" table="subject">
+        <id name="subjectId" type="java.lang.Integer">
+            <column name="SubjectID"/>
+            <generator class="identity"/>
+        </id>
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Course" fetch="select" name="course">
+            <column name="CourseId" not-null="true"/>
+        </many-to-one>
+        <property name="subjectName" type="string">
+            <column length="40" name="SubjectName" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

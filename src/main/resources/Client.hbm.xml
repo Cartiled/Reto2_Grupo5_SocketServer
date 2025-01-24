@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 17 ene 2025, 15:37:14 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Client" optimistic-lock="none" table="client">
+        <id name="userId" type="java.lang.Integer">
+            <column name="UserId"/>
+            <generator class="identity"/>
+        </id>
+        <property name="userName" type="string">
+            <column length="40" name="UserName" not-null="true"/>
+        </property>
+        <property name="surname" type="string">
+            <column length="40" name="Surname" not-null="true"/>
+        </property>
+        <property name="secondsurname" type="string">
+            <column length="40" name="secondsurname" not-null="true"/>
+        </property>
+        <property name="pass" type="string">
+            <column length="40" name="Pass" not-null="true"/>
+        </property>
+         <property name="dni" type="string">
+            <column length="9" name="dni" not-null="true"/>
+        </property>
+         <property name="direction" type="string">
+            <column length="40" name="direction" not-null="true"/>
+        </property>
+          <property name="telephone" type="int">
+            <column name="telephone" not-null="true"/>
+        </property>
+          <property name="userType" type="boolean">
+            <column  name="userType" not-null="true"/>
+        </property>
+          <property name="registered" type="boolean">
+            <column  name="registered" not-null="false"/>
+        </property>
+        <one-to-one class="com.Reto2.RetoServer.Database.Entity.Student" name="student"/>
+        <one-to-one class="com.Reto2.RetoServer.Database.Entity.Professor" name="professor"/>
+        <set fetch="select" inverse="true" lazy="true" name="schedules" table="schedule">
+            <key>
+                <column name="UserId"/>
+            </key>
+            <one-to-many class="com.Reto2.RetoServer.Database.Entity.Schedule"/>
+        </set>
+    </class>
+</hibernate-mapping>

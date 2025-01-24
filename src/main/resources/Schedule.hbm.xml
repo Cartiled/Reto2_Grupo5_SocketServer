@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 17 ene 2025, 15:37:14 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Schedule" optimistic-lock="none" table="schedule">
+        <id name="scheduleId" type="java.lang.Integer">
+            <column name="ScheduleID"/>
+            <generator class="identity"/>
+        </id>
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Client" fetch="select" name="client">
+            <column name="UserId"/>
+        </many-to-one>
+        <property name="scheduleDay" type="int">
+            <column name="ScheduleDay" not-null="true"/>
+        </property>
+        <property name="scheduleWeek" type="int">
+            <column name="ScheduleWeek" not-null="true"/>
+        </property>
+        <property name="tipoDato" type="string">
+            <column length="40" name="TipoDato" not-null="true"/>
+        </property>
+        <set fetch="select" inverse="true" lazy="true" name="courses" table="course">
+            <key>
+                <column name="ScheduleID" not-null="true"/>
+            </key>
+            <one-to-many class="com.Reto2.RetoServer.Database.Entity.Course"/>
+        </set>
+    </class>
+</hibernate-mapping>
