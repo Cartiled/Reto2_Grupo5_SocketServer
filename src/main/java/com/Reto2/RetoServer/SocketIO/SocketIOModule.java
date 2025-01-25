@@ -43,7 +43,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
-		server.addEventListener(Events.ON_REGISTER_AWNSER.value, String.class, this.register());
+		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
 	}
 
 	private DataListener<String> login() {
@@ -54,9 +54,10 @@ public class SocketIOModule {
 				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
 				if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
-					client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
 					System.out.println("Datos incorrecto");
 				}
+
 				String userName = jsonObject.get("message").getAsString();
 				String userPass = jsonObject.get("userPass").getAsString();
 
@@ -68,14 +69,13 @@ public class SocketIOModule {
 				if (loginClient.getRegistered() == true) {
 					System.out.println("usuario registrado");
 					if (userName.equals(name) && userPass.equals(pass)) {
-						System.out.println(loginClient.toString());
-
+						System.out.println("gols");
 						String answerMessage = gson.toJson(loginClient);
 						MessageOutput messageOutput = new MessageOutput(answerMessage);
 						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
 						System.out.println("El usuario ha sido logueado correctamente: " + userName);
 					} else {
-						client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
+						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
 						System.out.println("El usuario no ha podido loguearse: " + userName);
 					}
 				} else {
@@ -84,7 +84,7 @@ public class SocketIOModule {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Error de servidor");
 			}
 		});
 	}
@@ -116,7 +116,7 @@ public class SocketIOModule {
 			JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
 			if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
-				client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
 				System.out.println(jsonObject.toString());
 				System.out.println("Datos incorrecto");
 			} else {
@@ -191,7 +191,6 @@ public class SocketIOModule {
 						links.add(document.getLink());
 					}
 					String jsonDocuments = gson.toJson(links);
-					System.out.println(jsonDocuments);
 					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
 				}
 			} catch (Exception e) {
@@ -217,7 +216,6 @@ public class SocketIOModule {
 						links.add(document.getLink());
 					}
 					String jsonDocuments = gson.toJson(links);
-					System.out.println(jsonDocuments);
 					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
 				}
 			} catch (Exception e) {
