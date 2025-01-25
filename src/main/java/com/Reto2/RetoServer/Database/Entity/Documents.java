@@ -1,5 +1,7 @@
 package com.Reto2.RetoServer.Database.Entity;
 
+import com.google.gson.annotations.Expose;
+
 // default package
 // Generated 22 ene 2025 2:12:36 by Hibernate Tools 6.2.5.Final
 
@@ -9,10 +11,15 @@ package com.Reto2.RetoServer.Database.Entity;
 public class Documents implements java.io.Serializable {
 
 	private static final long serialVersionUID = -1814230672591737626L;
+	 @Expose
 	private Integer documentId;
+	 @Expose
 	private Course course;
+	 @Expose
 	private Subject subject;
+	 @Expose
 	private int allowedCourse;
+	 @Expose
 	private String link;
 
 	public Documents() {
