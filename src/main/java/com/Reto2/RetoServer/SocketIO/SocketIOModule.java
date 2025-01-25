@@ -145,13 +145,17 @@ public class SocketIOModule {
 				} else {
 					int userId = message.get("userId").getAsInt();
 					List<Documents> documents = getDocumentsByCycle(userId);
-
-					String jsonDocuments = gson.toJson(documents);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					System.out.println(jsonDocuments);
 					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
 			}
 		});
 	}
@@ -167,13 +171,17 @@ public class SocketIOModule {
 				} else {
 					int userId = message.get("userId").getAsInt();
 					List<Documents> documents = getDocumentsByCourse(userId);
-
-					String jsonDocuments = gson.toJson(documents);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					System.out.println(jsonDocuments);
 					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
 			}
 		});
 	}
