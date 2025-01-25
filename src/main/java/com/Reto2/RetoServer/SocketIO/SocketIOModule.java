@@ -43,6 +43,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
+		server.addEventListener(Events.ON_REGISTER_AWNSER.value, String.class, this.register());
 	}
 
 	private DataListener<String> login() {
@@ -56,11 +57,11 @@ public class SocketIOModule {
 					client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
 					System.out.println("Datos incorrecto");
 				}
-
 				String userName = jsonObject.get("message").getAsString();
 				String userPass = jsonObject.get("userPass").getAsString();
 
 				Client loginClient = sendClient(userName);
+				Student student = getStudentByUser(userName);
 				String name = loginClient.getUserName();
 				String pass = loginClient.getPass();
 
@@ -68,6 +69,7 @@ public class SocketIOModule {
 					System.out.println("usuario registrado");
 					if (userName.equals(name) && userPass.equals(pass)) {
 						System.out.println(loginClient.toString());
+
 						String answerMessage = gson.toJson(loginClient);
 						MessageOutput messageOutput = new MessageOutput(answerMessage);
 						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
@@ -80,7 +82,6 @@ public class SocketIOModule {
 					System.out.println("usuario no registrado");
 					client.sendEvent(Events.ON_REGISTER.value, "Registrate porfavor");
 				}
-
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
@@ -106,6 +107,46 @@ public class SocketIOModule {
 
 			System.out.println(userName + " loged out");
 		});
+	}
+
+	private DataListener<String> register() {
+		return ((client, data, ackSender) -> {
+			System.out.println("Client from " + client.getRemoteAddress() + " wants to register");
+			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+			JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+
+			if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
+				client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+				System.out.println(jsonObject.toString());
+				System.out.println("Datos incorrecto");
+			} else {
+				System.out.println(jsonObject.toString());
+			}
+			String userName = jsonObject.get("username").getAsString();
+			String userPass = jsonObject.get("userpass").getAsString();
+
+			Client loginClient = sendClient(userName);
+			String name = loginClient.getUserName();
+			String pass = loginClient.getPass();
+			String surname = loginClient.getSurname();
+			String secondSurname = loginClient.getSecondsurname();
+			String direction = loginClient.getDirection();
+			String dni = loginClient.getDni();
+			int telephone = loginClient.getTelephone();
+
+			Student student = getStudentByUser(userName);
+			char userCourseYear = student.getUserYear();
+			Boolean dual = student.isIntensiveDual();
+
+			if (userPass.equals(pass)) {
+				System.out.println("La contraseña es igual que la anterior");
+				client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
+			} else {
+
+			}
+
+		});
+
 	}
 
 	private DataListener<String> filterBySubject() {
@@ -226,6 +267,8 @@ public class SocketIOModule {
 
 	public void start() {
 		server.start();
+		Course course = getUserCourseByMatriculation(1);
+		System.out.println(course.getTitle());
 		System.out.println("Server started...");
 
 	}
@@ -243,9 +286,37 @@ public class SocketIOModule {
 		try {
 			client = query.getSingleResult();
 		} catch (NoResultException e) {
-			System.out.println("No client found with the username 'John'.");
+			System.out.println("No client found with the username: " + loginUserName);
 		}
 		return client;
+	}
+
+	public Student getStudentByUser(String registerName) {
+		String hql = "from Student where client.userName =:registerName";
+		Query<Student> query = session.createQuery(hql, Student.class);
+		query.setParameter("registerName", registerName);
+		Student student = null;
+		try {
+			student = query.getSingleResult();
+		} catch (NoResultException e) {
+			System.out.println("No client found with the username: " + registerName);
+		}
+		return student;
+
+	}
+
+	public Course getUserCourseByMatriculation(int id) {
+		String hql = "select c from Course c join c.matriculations m join m.student s where s.userId =:id";
+		Query<Course> query = session.createQuery(hql, Course.class);
+		query.setParameter("id", id);
+		Course course = null;
+		try {
+			course = query.getSingleResult();
+		} catch (NoResultException e) {
+			System.out.println("No client found with the username: " + id);
+		}
+		return course;
+
 	}
 
 	public List<Client> getAllClient() {

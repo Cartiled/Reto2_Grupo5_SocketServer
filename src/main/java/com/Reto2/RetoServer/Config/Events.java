@@ -18,7 +18,9 @@ public enum Events {
     ON_FILTER_ERROR("onFilterError"),
 	ON_LOGIN_STUDENT("onLoginStudent"),
 	ON_LOGIN_PROFESSOR("onLoginProfessor"),
-	ON_REGISTER("onRegister");
+	ON_REGISTER("onRegister"),
+	ON_REGISTER_AWNSER("onRegisterAwnser"),
+	ON_REGISTER_SAME_PASSWORD("onRegisterSamePassword");
 	
 	public final String value;
 
