@@ -45,8 +45,11 @@ public class SocketIOModule {
 		// Custom events
 		server.addEventListener(Events.ON_LOGIN.value, String.class, this.login());
 		server.addEventListener(Events.ON_GET_ALL.value, MessageInput.class, this.getAll());
+		server.addEventListener(Events.ON_FILTER_BY_COURSE.value, String.class, this.filterByCourse());
+		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
+		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
-		server.addEventListener(Events.ON_REGISTER_AWNSER.value, String.class, this.register());
+		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
 	}
 
 	private DataListener<String> login() {
@@ -57,7 +60,7 @@ public class SocketIOModule {
 				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
 				if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
-					client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
 					System.out.println("Datos incorrecto");
 				}
 
@@ -65,6 +68,7 @@ public class SocketIOModule {
 				String userPass = jsonObject.get("userPass").getAsString();
 
 				Client loginClient = sendClient(userName);
+<<<<<<< HEAD
 				Student student = getStudentByUser(userName);
 				String name = loginClient.getUserName();
 				String pass = loginClient.getPass();
@@ -105,6 +109,7 @@ public class SocketIOModule {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+<<<<<<< HEAD
 				client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
 			}
 		});
@@ -177,7 +182,7 @@ public class SocketIOModule {
 			JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
 			if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
-				client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
+				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
 				System.out.println(jsonObject.toString());
 				System.out.println("Datos incorrecto");
 			} else {
@@ -190,7 +195,7 @@ public class SocketIOModule {
 			String name = loginClient.getUserName();
 			String pass = loginClient.getPass();
 			String surname = loginClient.getSurname();
-			String secondSurname = loginClient.getSecondsurname();
+			String secondSurname = loginClient.getSecondSurname();
 			String direction = loginClient.getDirection();
 			String dni = loginClient.getDni();
 			int telephone = loginClient.getTelephone();
@@ -208,6 +213,82 @@ public class SocketIOModule {
 
 		});
 
+	}
+
+	private DataListener<String> filterBySubject() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+					List<Documents> documents = getDocumentsBySubject(userId);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					System.out.println(jsonDocuments);
+					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> filterByCycle() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+					List<Documents> documents = getDocumentsByCycle(userId);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> filterByCourse() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+					List<Documents> documents = getDocumentsByCourse(userId);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
 	}
 
 	private DataListener<MessageInput> getAll() {
@@ -305,13 +386,47 @@ public class SocketIOModule {
 	public List<Client> getAllClient() {
 		List<Client> clients = new ArrayList<Client>();
 		String hql = "Select * from Client";
-		Client client = new Client();
-		Query<?> q = session.createQuery(hql);
-		List<?> filas = q.list();
-		for (int i = 0; i < filas.size(); i++) {
-			client = (Client) filas.get(i);
-			clients.add(client);
-		}
+		Query<Client> q = session.createQuery(hql, Client.class);
+		clients = q.list();
 		return clients;
+	}
+
+	public List<Documents> getDocumentsBySubject(int userId) {
+		String hqlForStudentCourse = "select m.course.courseId from Matriculation as m where m.student.userId =:userId";
+		Query<Integer> queryForCourseId = session.createQuery(hqlForStudentCourse, Integer.class);
+		queryForCourseId.setParameter("userId", userId);
+		int courseId = queryForCourseId.getSingleResult();
+
+		String hqlForSubjectId = "select s.subjectId from Subject as s where s.course.courseId =:courseId";
+		Query<Integer> queryForSubjectId = session.createQuery(hqlForSubjectId, Integer.class);
+		queryForSubjectId.setParameter("courseId", courseId);
+		int subjectId = queryForSubjectId.getSingleResult();
+
+		String hql = "from Documents where subject.subjectId =:subjectId";
+		Query<Documents> query = session.createQuery(hql, Documents.class);
+		query.setParameter("subjectId", subjectId);
+		List<Documents> documents = query.list();
+		return documents;
+	}
+
+	public List<Documents> getDocumentsByCourse(int userId) {
+		String hqlForStudentCourse = "select m.course.courseId from Matriculation as m where m.student.userId =:userId";
+		Query<Integer> queryForCourseId = session.createQuery(hqlForStudentCourse, Integer.class);
+		queryForCourseId.setParameter("userId", userId);
+		int courseId = queryForCourseId.getSingleResult();
+
+		String hql = "from Documents where course.courseId =:courseId";
+		Query<Documents> query = session.createQuery(hql, Documents.class);
+		query.setParameter("courseId", courseId);
+		List<Documents> documents = query.list();
+		return documents;
+	}
+
+	public List<Documents> getDocumentsByCycle(int userId) {
+		String hql = "from Documents where allowedCourse =:allowedCourse";
+		Query<Documents> query = session.createQuery(hql, Documents.class);
+		query.setParameter("allowedCourse", 1);
+		List<Documents> documents = query.list();
+		return documents;
 	}
 }
