@@ -1,5 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-// Generated 17 ene 2025, 15:37:13 by Hibernate Tools 6.5.1.Final
+// Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,31 +9,27 @@ import java.util.Set;
  */
 public class Schedule implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8817143435324917310L;
 	private Integer scheduleId;
 	private Client client;
 	private int scheduleDay;
-	private int scheduleWeek;
 	private String tipoDato;
+	private String scheduleHour;
 	private Set courses = new HashSet(0);
 
 	public Schedule() {
 	}
 
-	public Schedule(int scheduleDay, int scheduleWeek, String tipoDato) {
+	public Schedule(int scheduleDay, String tipoDato, String scheduleHour) {
 		this.scheduleDay = scheduleDay;
-		this.scheduleWeek = scheduleWeek;
 		this.tipoDato = tipoDato;
+		this.scheduleHour = scheduleHour;
 	}
 
-	public Schedule(Client client, int scheduleDay, int scheduleWeek, String tipoDato, Set courses) {
+	public Schedule(Client client, int scheduleDay, String tipoDato, String scheduleHour, Set courses) {
 		this.client = client;
 		this.scheduleDay = scheduleDay;
-		this.scheduleWeek = scheduleWeek;
 		this.tipoDato = tipoDato;
+		this.scheduleHour = scheduleHour;
 		this.courses = courses;
 	}
 
@@ -61,20 +57,20 @@ public class Schedule implements java.io.Serializable {
 		this.scheduleDay = scheduleDay;
 	}
 
-	public int getScheduleWeek() {
-		return this.scheduleWeek;
-	}
-
-	public void setScheduleWeek(int scheduleWeek) {
-		this.scheduleWeek = scheduleWeek;
-	}
-
 	public String getTipoDato() {
 		return this.tipoDato;
 	}
 
 	public void setTipoDato(String tipoDato) {
 		this.tipoDato = tipoDato;
+	}
+
+	public String getScheduleHour() {
+		return this.scheduleHour;
+	}
+
+	public void setScheduleHour(String scheduleHour) {
+		this.scheduleHour = scheduleHour;
 	}
 
 	public Set getCourses() {

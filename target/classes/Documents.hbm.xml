@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Documents" optimistic-lock="none" table="documents">
+        <id name="documentId" type="java.lang.Integer">
+            <column name="documentID"/>
+            <generator class="identity"/>
+        </id>
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Course" fetch="select" name="course">
+            <column name="AllowedCycle" not-null="true"/>
+        </many-to-one>
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Subject" fetch="select" name="subject">
+            <column name="AllowedSubject" not-null="true"/>
+        </many-to-one>
+        <property name="allowedCourse" type="int">
+            <column name="AllowedCourse" not-null="true"/>
+        </property>
+        <property name="link" type="string">
+            <column length="100" name="link" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

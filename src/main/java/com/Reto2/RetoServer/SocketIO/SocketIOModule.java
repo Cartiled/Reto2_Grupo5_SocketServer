@@ -39,55 +39,52 @@ public class SocketIOModule {
 		// Custom events
 		server.addEventListener(Events.ON_LOGIN.value, String.class, this.login());
 		server.addEventListener(Events.ON_GET_ALL.value, MessageInput.class, this.getAll());
+		server.addEventListener(Events.ON_FILTER_BY_COURSE.value, String.class, this.filterByCourse());
+		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
+		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
-		server.addEventListener(Events.ON_REGISTER_AWNSER.value, String.class, this.register());
+		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
 	}
 
-
-
 	private DataListener<String> login() {
-	    return ((client, data, ackSender) -> {
-	        try {
-	            System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
-	            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-	            JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+		return ((client, data, ackSender) -> {
+			try {
+				System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
-	        
-	            if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
-	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
-	                System.out.println("Datos incorrecto");
-	            }
+				if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
+					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
+					System.out.println("Datos incorrecto");
+				}
 
-	            String userName = jsonObject.get("message").getAsString();
-	            String userPass = jsonObject.get("userPass").getAsString();
-	            
-	            Client loginClient = sendClient(userName);
-	            Student student = getStudentByUser(userName);
-	            String name = loginClient.getUserName();
-	            String pass = loginClient.getPass();
-	         
-	          if(loginClient.getRegistered()==true) {
-	        	  System.out.println("usuario registrado");
-	            if (userName.equals(name) && userPass.equals(pass)) {
-	                System.out.println(loginClient.toString());
-	              
-	                String answerMessage = gson.toJson(loginClient);
-	                MessageOutput messageOutput = new MessageOutput(answerMessage);
-	                client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
-	                System.out.println("El usuario ha sido logueado correctamente: " + userName);
-	            } else {
-	                client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
-	                System.out.println("El usuario no ha podido loguearse: " + userName);
-	            }
-	          }else {
-	        	  System.out.println("usuario no registrado");
-	        	  client.sendEvent(Events.ON_REGISTER.value,"Registrate porfavor");
-	          }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
-	        }
-	    });
+				String userName = jsonObject.get("message").getAsString();
+				String userPass = jsonObject.get("userPass").getAsString();
+
+				Client loginClient = sendClient(userName);
+				String name = loginClient.getUserName();
+				String pass = loginClient.getPass();
+
+				if (loginClient.getRegistered() == true) {
+					System.out.println("usuario registrado");
+					if (userName.equals(name) && userPass.equals(pass)) {
+						String answerMessage = gson.toJson(loginClient);
+						MessageOutput messageOutput = new MessageOutput(answerMessage);
+						System.out.println(messageOutput);
+						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
+					} else {
+						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
+						System.out.println("El usuario no ha podido loguearse: " + userName);
+					}
+				} else {
+					System.out.println("usuario no registrado");
+					client.sendEvent(Events.ON_REGISTER.value, "Registrate porfavor");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Error de servidor");
+			}
+		});
 	}
 
 	private DataListener<MessageInput> logout() {
@@ -109,48 +106,121 @@ public class SocketIOModule {
 			System.out.println(userName + " loged out");
 		});
 	}
-	
+
 	private DataListener<String> register() {
 		return ((client, data, ackSender) -> {
-				System.out.println("Client from " + client.getRemoteAddress() + " wants to register");
-				  Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-				  JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
- 
-		            if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
-		                client.sendEvent(Events.ON_LOGIN_FALL.value, "Formato de datos invalido");
-		                System.out.println(jsonObject.toString());
-		                System.out.println("Datos incorrecto");
-		            }else {
-		            	System.out.println(jsonObject.toString());
-		            }
-		            String userName = jsonObject.get("username").getAsString();
-		            String userPass = jsonObject.get("userpass").getAsString();
-		            
-		            Client loginClient = sendClient(userName);
-		            String name = loginClient.getUserName();
-		            String pass = loginClient.getPass();
-		            String surname = loginClient.getSurname();
-		            String secondSurname = loginClient.getSecondsurname();
-		            String direction = loginClient.getDirection();
-		            String dni = loginClient.getDni();
-		            int telephone = loginClient.getTelephone();
-		            
-		            Student student = getStudentByUser(userName);
-		            char userCourseYear = student.getUserYear();
-		            Boolean dual = student.isIntensiveDual();
-		            
-		            
-		            if(userPass.equals(pass)) {
-		            	System.out.println("La contraseña es igual que la anterior");
-		            	client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
-		            }else {
-		            	
-		            }
-		            
-			
-			
+			System.out.println("Client from " + client.getRemoteAddress() + " wants to register");
+			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+			JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+
+			if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
+				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
+				System.out.println(jsonObject.toString());
+				System.out.println("Datos incorrecto");
+			} else {
+				System.out.println(jsonObject.toString());
+			}
+			String userName = jsonObject.get("username").getAsString();
+			String userPass = jsonObject.get("userpass").getAsString();
+
+			Client loginClient = sendClient(userName);
+			String name = loginClient.getUserName();
+			String pass = loginClient.getPass();
+			String surname = loginClient.getSurname();
+			String secondSurname = loginClient.getSecondSurname();
+			String direction = loginClient.getDirection();
+			String dni = loginClient.getDni();
+			int telephone = loginClient.getTelephone();
+
+			Student student = getStudentByUser(userName);
+			char userCourseYear = student.getUserYear();
+			Boolean dual = student.isIntensiveDual();
+
+			if (userPass.equals(pass)) {
+				System.out.println("La contraseña es igual que la anterior");
+				client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
+			} else {
+
+			}
+
 		});
-		
+
+	}
+
+	private DataListener<String> filterBySubject() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+					List<Documents> documents = getDocumentsBySubject(userId);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					System.out.println(jsonDocuments);
+					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> filterByCycle() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+					List<Documents> documents = getDocumentsByCycle(userId);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> filterByCourse() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+					List<Documents> documents = getDocumentsByCourse(userId);
+					List<String> links = new ArrayList<>();
+					for (Documents document : documents) {
+						links.add(document.getLink());
+					}
+					String jsonDocuments = gson.toJson(links);
+					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
 	}
 
 	private DataListener<MessageInput> getAll() {
@@ -181,6 +251,7 @@ public class SocketIOModule {
 			System.out.println("New connection, Client: " + client.getRemoteAddress());
 		});
 	}
+
 	private DisconnectListener onDisconnect() {
 		return (client -> {
 			client.leaveRoom("default-room");
@@ -195,8 +266,7 @@ public class SocketIOModule {
 		Course course = getUserCourseByMatriculation(1);
 		System.out.println(course.getTitle());
 		System.out.println("Server started...");
-		
-		
+
 	}
 
 	public void stop() {
@@ -216,7 +286,7 @@ public class SocketIOModule {
 		}
 		return client;
 	}
-	
+
 	public Student getStudentByUser(String registerName) {
 		String hql = "from Student where client.userName =:registerName";
 		Query<Student> query = session.createQuery(hql, Student.class);
@@ -228,9 +298,9 @@ public class SocketIOModule {
 			System.out.println("No client found with the username: " + registerName);
 		}
 		return student;
-		
+
 	}
-	
+
 	public Course getUserCourseByMatriculation(int id) {
 		String hql = "select c from Course c join c.matriculations m join m.student s where s.userId =:id";
 		Query<Course> query = session.createQuery(hql, Course.class);
@@ -242,18 +312,53 @@ public class SocketIOModule {
 			System.out.println("No client found with the username: " + id);
 		}
 		return course;
-		
+
 	}
-	public List<Client> getAllClient(){
+
+	public List<Client> getAllClient() {
 		List<Client> clients = new ArrayList<Client>();
 		String hql = "Select * from Client";
-		Client client = new Client();
-		Query<?> q = session.createQuery(hql);
-		List<?> filas = q.list();	
-		for(int i=0; i < filas.size(); i++) {
-			client = (Client) filas.get(i);
-			clients.add(client);
-		}
+		Query<Client> q = session.createQuery(hql, Client.class);
+		clients = q.list();
 		return clients;
+	}
+
+	public List<Documents> getDocumentsBySubject(int userId) {
+		String hqlForStudentCourse = "select m.course.courseId from Matriculation as m where m.student.userId =:userId";
+		Query<Integer> queryForCourseId = session.createQuery(hqlForStudentCourse, Integer.class);
+		queryForCourseId.setParameter("userId", userId);
+		int courseId = queryForCourseId.getSingleResult();
+
+		String hqlForSubjectId = "select s.subjectId from Subject as s where s.course.courseId =:courseId";
+		Query<Integer> queryForSubjectId = session.createQuery(hqlForSubjectId, Integer.class);
+		queryForSubjectId.setParameter("courseId", courseId);
+		int subjectId = queryForSubjectId.getSingleResult();
+
+		String hql = "from Documents where subject.subjectId =:subjectId";
+		Query<Documents> query = session.createQuery(hql, Documents.class);
+		query.setParameter("subjectId", subjectId);
+		List<Documents> documents = query.list();
+		return documents;
+	}
+
+	public List<Documents> getDocumentsByCourse(int userId) {
+		String hqlForStudentCourse = "select m.course.courseId from Matriculation as m where m.student.userId =:userId";
+		Query<Integer> queryForCourseId = session.createQuery(hqlForStudentCourse, Integer.class);
+		queryForCourseId.setParameter("userId", userId);
+		int courseId = queryForCourseId.getSingleResult();
+
+		String hql = "from Documents where course.courseId =:courseId";
+		Query<Documents> query = session.createQuery(hql, Documents.class);
+		query.setParameter("courseId", courseId);
+		List<Documents> documents = query.list();
+		return documents;
+	}
+
+	public List<Documents> getDocumentsByCycle(int userId) {
+		String hql = "from Documents where allowedCourse =:allowedCourse";
+		Query<Documents> query = session.createQuery(hql, Documents.class);
+		query.setParameter("allowedCourse", 1);
+		List<Documents> documents = query.list();
+		return documents;
 	}
 }

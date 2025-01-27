@@ -1,5 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-// Generated 17 ene 2025, 15:37:13 by Hibernate Tools 6.5.1.Final
+// Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,10 +9,6 @@ import java.util.Set;
  */
 public class Course implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3837166687655056942L;
 	private Integer courseId;
 	private Schedule schedule;
 	private String title;
@@ -20,6 +16,7 @@ public class Course implements java.io.Serializable {
 	private String courseDescription;
 	private Set subjects = new HashSet(0);
 	private Set matriculations = new HashSet(0);
+	private Set documentses = new HashSet(0);
 
 	public Course() {
 	}
@@ -31,13 +28,14 @@ public class Course implements java.io.Serializable {
 	}
 
 	public Course(Schedule schedule, String title, String email, String courseDescription, Set subjects,
-			Set matriculations) {
+			Set matriculations, Set documentses) {
 		this.schedule = schedule;
 		this.title = title;
 		this.email = email;
 		this.courseDescription = courseDescription;
 		this.subjects = subjects;
 		this.matriculations = matriculations;
+		this.documentses = documentses;
 	}
 
 	public Integer getCourseId() {
@@ -94,6 +92,14 @@ public class Course implements java.io.Serializable {
 
 	public void setMatriculations(Set matriculations) {
 		this.matriculations = matriculations;
+	}
+
+	public Set getDocumentses() {
+		return this.documentses;
+	}
+
+	public void setDocumentses(Set documentses) {
+		this.documentses = documentses;
 	}
 
 }
