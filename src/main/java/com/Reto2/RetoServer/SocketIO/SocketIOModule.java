@@ -62,18 +62,16 @@ public class SocketIOModule {
 				String userPass = jsonObject.get("userPass").getAsString();
 
 				Client loginClient = sendClient(userName);
-				Student student = getStudentByUser(userName);
 				String name = loginClient.getUserName();
 				String pass = loginClient.getPass();
 
 				if (loginClient.getRegistered() == true) {
 					System.out.println("usuario registrado");
 					if (userName.equals(name) && userPass.equals(pass)) {
-						System.out.println("gols");
 						String answerMessage = gson.toJson(loginClient);
 						MessageOutput messageOutput = new MessageOutput(answerMessage);
+						System.out.println(messageOutput);
 						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
-						System.out.println("El usuario ha sido logueado correctamente: " + userName);
 					} else {
 						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
 						System.out.println("El usuario no ha podido loguearse: " + userName);
@@ -129,7 +127,7 @@ public class SocketIOModule {
 			String name = loginClient.getUserName();
 			String pass = loginClient.getPass();
 			String surname = loginClient.getSurname();
-			String secondSurname = loginClient.getSecondsurname();
+			String secondSurname = loginClient.getSecondSurname();
 			String direction = loginClient.getDirection();
 			String dni = loginClient.getDni();
 			int telephone = loginClient.getTelephone();

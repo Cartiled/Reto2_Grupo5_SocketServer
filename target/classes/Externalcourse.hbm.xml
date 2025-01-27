@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 25 ene 2025 18:28:04 by Hibernate Tools 6.2.5.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class catalog="reto2grupo5" name="Externalcourse" optimistic-lock="none" table="externalcourse">
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Externalcourse" optimistic-lock="none" table="externalcourse">
         <id name="externalCourseId" type="java.lang.Integer">
             <column name="externalCourseID"/>
             <generator class="identity"/>
@@ -25,10 +25,10 @@
             <column name="schedule" not-null="true"/>
         </property>
         <property name="lattitude" type="float">
-            <column name="lattitude" not-null="true" precision="12" scale="0"/>
+            <column name="lattitude" not-null="true" precision="12"/>
         </property>
         <property name="longitude" type="float">
-            <column name="longitude" not-null="true" precision="12" scale="0"/>
+            <column name="longitude" not-null="true" precision="12"/>
         </property>
     </class>
 </hibernate-mapping>

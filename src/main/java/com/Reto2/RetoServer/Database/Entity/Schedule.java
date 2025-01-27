@@ -1,7 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-
-// default package
-// Generated 25 ene 2025 18:32:55 by Hibernate Tools 6.2.5.Final
+// Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +17,12 @@ public class Schedule implements java.io.Serializable {
 	private Set courses = new HashSet(0);
 
 	public Schedule() {
+	}
+
+	public Schedule(int scheduleDay, String tipoDato, String scheduleHour) {
+		this.scheduleDay = scheduleDay;
+		this.tipoDato = tipoDato;
+		this.scheduleHour = scheduleHour;
 	}
 
 	public Schedule(Client client, int scheduleDay, String tipoDato, String scheduleHour, Set courses) {

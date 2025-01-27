@@ -1,7 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-
-// default package
-// Generated 25 ene 2025 18:28:02 by Hibernate Tools 6.2.5.Final
+// Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final
 
 import java.sql.Date;
 
@@ -10,7 +8,6 @@ import java.sql.Date;
  */
 public class Externalcourse implements java.io.Serializable {
 
-	private static final long serialVersionUID = -7253835337036750560L;
 	private Integer externalCourseId;
 	private int telephone;
 	private String title;

@@ -2,65 +2,15 @@
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.org/dtd/hibernate-reverse-engineering-3.0.dtd" >
 
 <hibernate-reverse-engineering>
-	<table catalog="reto2grupo5" name="assistant">
-		<column name="AssistantID"></column>
-		<column name="UserId"></column>
-		<column name="ReunionID"></column>
-	</table>
-	<table catalog="reto2grupo5" name="client">
-		<column name="UserId"></column>
-		<column name="UserName"></column>
-		<column name="Surname"></column>
-		<column name="Pass"></column>
-	</table>
-	<table catalog="reto2grupo5" name="course">
-		<column name="CourseID"></column>
-		<column name="ScheduleID"></column>
-		<column name="Title"></column>
-		<column name="Email"></column>
-		<column name="CourseDescription"></column>
-	</table>
-	<table catalog="reto2grupo5" name="matriculation">
-		<column name="MatriculationID"></column>
-		<column name="UserId"></column>
-		<column name="CourseId"></column>
-		<column name="matriculationDate"></column>
-	</table>
-	<table catalog="reto2grupo5" name="professor">
-		<column name="UserId"></column>
-	</table>
-	<table catalog="reto2grupo5" name="reunion">
-		<column name="ReunionID"></column>
-		<column name="UserId"></column>
-		<column name="Title"></column>
-		<column name="Affair"></column>
-		<column name="DayAndHour"></column>
-		<column name="Class"></column>
-		<column name="SendedRequest"></column>
-		<column name="ReunionState"></column>
-	</table>
-	<table catalog="reto2grupo5" name="schedule">
-		<column name="ScheduleID"></column>
-		<column name="UserId"></column>
-		<column name="ScheduleDay"></column>
-		<column name="ScheduleWeek"></column>
-		<column name="TipoDato"></column>
-	</table>
-	<table catalog="reto2grupo5" name="student">
-		<column name="UserId"></column>
-		<column name="UserYear"></column>
-		<column name="IntensiveDual"></column>
-	</table>
-	<table catalog="reto2grupo5" name="subject">
-		<column name="SubjectID"></column>
-		<column name="CourseId"></column>
-		<column name="SubjectName"></column>
-	</table>
-	<table catalog="reto2grupo5" name="documents">
-		<column name="documentID"></column>
-		<column name="link"></column>
-		<column name="AllowedCourse"></column>
-		<column name="AllowedSubject"></column>
-		<column name="AllowedCycle"></column>
-	</table>
+  <table-filter match-catalog="reto2grupo5" match-name="assistant"/>
+  <table-filter match-catalog="reto2grupo5" match-name="client"/>
+  <table-filter match-catalog="reto2grupo5" match-name="course"/>
+  <table-filter match-catalog="reto2grupo5" match-name="documents"/>
+  <table-filter match-catalog="reto2grupo5" match-name="externalcourse"/>
+  <table-filter match-catalog="reto2grupo5" match-name="matriculation"/>
+  <table-filter match-catalog="reto2grupo5" match-name="professor"/>
+  <table-filter match-catalog="reto2grupo5" match-name="reunion"/>
+  <table-filter match-catalog="reto2grupo5" match-name="schedule"/>
+  <table-filter match-catalog="reto2grupo5" match-name="student"/>
+  <table-filter match-catalog="reto2grupo5" match-name="subject"/>
 </hibernate-reverse-engineering>
