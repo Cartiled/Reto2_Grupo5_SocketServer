@@ -44,6 +44,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
+		server.addEventListener(Events.ON_GET_EXTERNAL_COURSES.value, String.class, this.getExternalCourses());
 	}
 
 	private DataListener<String> login() {
@@ -70,7 +71,6 @@ public class SocketIOModule {
 					if (userName.equals(name) && userPass.equals(pass)) {
 						String answerMessage = gson.toJson(loginClient);
 						MessageOutput messageOutput = new MessageOutput(answerMessage);
-						System.out.println(messageOutput);
 						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
 					} else {
 						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
@@ -223,6 +223,20 @@ public class SocketIOModule {
 		});
 	}
 
+	private DataListener<String> getExternalCourses() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				List<Externalcourse> externalCourses = getExternalCoursesForUser();
+				String jsonExternalCourses = gson.toJson(externalCourses);
+				client.sendEvent(Events.ON_GET_EXTERNAL_COURSES_ANSWER.value, jsonExternalCourses);
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_GET_EXTERNAL_COURSES_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
 	private DataListener<MessageInput> getAll() {
 		return ((client, data, ackSender) -> {
 			try {
@@ -357,8 +371,15 @@ public class SocketIOModule {
 	public List<Documents> getDocumentsByCycle(int userId) {
 		String hql = "from Documents where allowedCourse =:allowedCourse";
 		Query<Documents> query = session.createQuery(hql, Documents.class);
-		query.setParameter("allowedCourse", 1);
+		query.setParameter("allowedCourse", 3);
 		List<Documents> documents = query.list();
 		return documents;
+	}
+
+	private List<Externalcourse> getExternalCoursesForUser() {
+		String hql = "from Externalcourse";
+		Query<Externalcourse> query = session.createQuery(hql, Externalcourse.class);
+		List<Externalcourse> externalCourse = query.list();
+		return externalCourse;
 	}
 }

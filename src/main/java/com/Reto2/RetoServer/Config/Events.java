@@ -21,9 +21,9 @@ public enum Events {
 	ON_REGISTER("onRegister"),
 	ON_REGISTER_ANSWER("onRegisterAnswer"),
 	ON_REGISTER_SAME_PASSWORD("onRegisterSamePassword"),
-	ON_EXTERNAL_COURSE_ANSWER("onExternalCourseAnswer"),
-	ON_EXTERNAL_COURSE_ERROR("onExternalCourseError"),
-	ON_EXTERNAL_COURSE("onExternalCourse");
+	ON_GET_EXTERNAL_COURSES_ANSWER("onExternalCourseAnswer"),
+    ON_GET_EXTERNAL_COURSES_ERROR("onExternalCourseError"),
+    ON_GET_EXTERNAL_COURSES("onExternalCourse");
 	
 	
 	
