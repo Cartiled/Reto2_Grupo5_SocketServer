@@ -56,4 +56,11 @@
 		<column name="CourseId"></column>
 		<column name="SubjectName"></column>
 	</table>
+	<table catalog="reto2grupo5" name="documents">
+		<column name="documentID"></column>
+		<column name="link"></column>
+		<column name="AllowedCourse"></column>
+		<column name="AllowedSubject"></column>
+		<column name="AllowedCycle"></column>
+	</table>
 </hibernate-reverse-engineering>
