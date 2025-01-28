@@ -137,21 +137,12 @@ public class SocketIOModule {
 				String userDni = jsonObject.get("dni").getAsString();
 				String userDirection = jsonObject.get("direction").getAsString();
 				int userTelephone = jsonObject.get("telephone").getAsInt();
-				char userYear = jsonObject.get("year").getAsCharacter();
-				String userCourseName = jsonObject.get("courseName").getAsString();
-				Boolean userDual = jsonObject.get("dual").getAsBoolean();
 				Client loginClient = sendClient(userName);
 				String pass = loginClient.getPass();
 				
 				Student student = getStudentByUser(userName);
-				System.out.println(student.getUserYear());
 				Course course = getUserCourseByMatriculation(loginClient.getUserId());
-				System.out.println(course.getTitle());
-				
-				System.out.println("userpass:" + userPass);
-				
-				System.out.println(pass);
-				
+
 				System.out.println("datos recogidos");
 				if (userPass.equals(pass)) {
 					System.out.println("La contraseña es igual que la anterior");
@@ -160,8 +151,7 @@ public class SocketIOModule {
 					if (userName.equals(loginClient.getUserName()) && userSurname.equals(loginClient.getSurname())
 							&& userSecondSurname.equals(loginClient.getSecondSurname())
 							&& userDni.equals(loginClient.getDni()) && userDirection.equals(loginClient.getDirection())
-							&& userTelephone == loginClient.getTelephone() && userYear == student.getUserYear()
-							&& userCourseName.equals(course.getTitle()) && userDual == student.isIntensiveDual()) {
+							&& userTelephone == loginClient.getTelephone()) {
 						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
 						System.out.println("todo correcto");
 					} else {
