@@ -9,6 +9,10 @@ import java.util.Set;
  */
 public class Professor implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 29662681295181430L;
 	private int userId;
 	private Client client;
 	private Set assistants = new HashSet(0);

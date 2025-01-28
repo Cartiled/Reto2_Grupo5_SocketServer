@@ -60,25 +60,37 @@ public class SocketIOModule {
 
 				String userName = jsonObject.get("message").getAsString();
 				String userPass = jsonObject.get("userPass").getAsString();
+				
 
 				Client loginClient = sendClient(userName);
 				String name = loginClient.getUserName();
 				String pass = loginClient.getPass();
-
+				Student student = getStudentByUser(userName);
+				Course course = getUserCourseByMatriculation(loginClient.getUserId());
 				if (loginClient.getRegistered() == true) {
 					System.out.println("usuario registrado");
 					if (userName.equals(name) && userPass.equals(pass)) {
-						String answerMessage = gson.toJson(loginClient);
-						MessageOutput messageOutput = new MessageOutput(answerMessage);
-						System.out.println(messageOutput);
-						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
+						   JsonObject responseJson = new JsonObject();
+		                    responseJson.add("loginClient", gson.toJsonTree(loginClient));
+		                    responseJson.add("student", gson.toJsonTree(student));
+		                    responseJson.add("course", gson.toJsonTree(course));
+						   	String answerMessage = gson.toJson(responseJson);
+	                        MessageOutput messageOutput = new MessageOutput(answerMessage);
+	                        
+		                    client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
 					} else {
 						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
 						System.out.println("El usuario no ha podido loguearse: " + userName);
 					}
 				} else {
 					System.out.println("usuario no registrado");
-					client.sendEvent(Events.ON_REGISTER.value, "Registrate porfavor");
+					JsonObject responseJson = new JsonObject();
+                    responseJson.add("loginClient", gson.toJsonTree(loginClient));
+                    responseJson.add("student", gson.toJsonTree(student));
+                    responseJson.add("course", gson.toJsonTree(course));
+				   	String answerMessage = gson.toJson(responseJson);
+                    MessageOutput messageOutput = new MessageOutput(answerMessage);
+					client.sendEvent(Events.ON_REGISTER.value,messageOutput);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -109,43 +121,65 @@ public class SocketIOModule {
 
 	private DataListener<String> register() {
 		return ((client, data, ackSender) -> {
-			System.out.println("Client from " + client.getRemoteAddress() + " wants to register");
-			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-			JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
-
-			if (!jsonObject.has("userName") || !jsonObject.has("userPass")) {
-				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
-				System.out.println(jsonObject.toString());
-				System.out.println("Datos incorrecto");
-			} else {
-				System.out.println(jsonObject.toString());
+			try {
+				System.out.println("Client from " + client.getRemoteAddress() + " wants to register");
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+				if (!jsonObject.has("username") || !jsonObject.has("userpass")) {
+					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
+					System.out.println(jsonObject.toString());
+					System.out.println("Datos incorrecto");
+				}else {
+				String userName = jsonObject.get("username").getAsString();
+				String userPass = jsonObject.get("userpass").getAsString();
+				String userSurname = jsonObject.get("surname").getAsString();
+				String userSecondSurname = jsonObject.get("secondsurname").getAsString();
+				String userDni = jsonObject.get("dni").getAsString();
+				String userDirection = jsonObject.get("direction").getAsString();
+				int userTelephone = jsonObject.get("telephone").getAsInt();
+				char userYear = jsonObject.get("year").getAsCharacter();
+				String userCourseName = jsonObject.get("courseName").getAsString();
+				Boolean userDual = jsonObject.get("dual").getAsBoolean();
+				Client loginClient = sendClient(userName);
+				String pass = loginClient.getPass();
+				
+				Student student = getStudentByUser(userName);
+				System.out.println(student.getUserYear());
+				Course course = getUserCourseByMatriculation(loginClient.getUserId());
+				System.out.println(course.getTitle());
+				
+				System.out.println("userpass:" + userPass);
+				
+				System.out.println(pass);
+				
+				System.out.println("datos recogidos");
+				if (userPass.equals(pass)) {
+					System.out.println("La contraseña es igual que la anterior");
+					client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
+				} else {
+					if (userName.equals(loginClient.getUserName()) && userSurname.equals(loginClient.getSurname())
+							&& userSecondSurname.equals(loginClient.getSecondSurname())
+							&& userDni.equals(loginClient.getDni()) && userDirection.equals(loginClient.getDirection())
+							&& userTelephone == loginClient.getTelephone() && userYear == student.getUserYear()
+							&& userCourseName.equals(course.getTitle()) && userDual == student.isIntensiveDual()) {
+						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
+						System.out.println("todo correcto");
+					} else {
+						client.sendEvent(Events.ON_REGISTER_FAIL.value,	"Por favor, comprueba los datos que estan correctos");					
+					}
+				}
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_REGISTER_FAIL.value,	"Error del servidor");	
 			}
-			String userName = jsonObject.get("username").getAsString();
-			String userPass = jsonObject.get("userpass").getAsString();
-
-			Client loginClient = sendClient(userName);
-			String name = loginClient.getUserName();
-			String pass = loginClient.getPass();
-			String surname = loginClient.getSurname();
-			String secondSurname = loginClient.getSecondSurname();
-			String direction = loginClient.getDirection();
-			String dni = loginClient.getDni();
-			int telephone = loginClient.getTelephone();
-
-			Student student = getStudentByUser(userName);
-			char userCourseYear = student.getUserYear();
-			Boolean dual = student.isIntensiveDual();
-
-			if (userPass.equals(pass)) {
-				System.out.println("La contraseña es igual que la anterior");
-				client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
-			} else {
-
-			}
-
+			
 		});
 
 	}
+
+
+	
 
 	private DataListener<String> filterBySubject() {
 		return ((client, data, ackSender) -> {
