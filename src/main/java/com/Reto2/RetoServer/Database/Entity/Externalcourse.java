@@ -8,6 +8,10 @@ import java.sql.Date;
  */
 public class Externalcourse implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7253835337036750560L;
 	private Integer externalCourseId;
 	private int telephone;
 	private String title;

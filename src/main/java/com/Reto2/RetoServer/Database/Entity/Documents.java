@@ -6,6 +6,10 @@ package com.Reto2.RetoServer.Database.Entity;
  */
 public class Documents implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1814230672591737626L;
 	private Integer documentId;
 	private Course course;
 	private Subject subject;

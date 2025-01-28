@@ -9,6 +9,10 @@ import java.util.Set;
  */
 public class Subject implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8574079878182275629L;
 	private Integer subjectId;
 	private Course course;
 	private String subjectName;
