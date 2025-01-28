@@ -26,7 +26,7 @@ public class Externalcourse implements java.io.Serializable {
 	@Expose
 	private int schedule;
 	@Expose
-	private float lattitude;
+	private float latitude;
 	@Expose
 	private float longitude;
 
@@ -34,14 +34,14 @@ public class Externalcourse implements java.io.Serializable {
 	}
 
 	public Externalcourse(int telephone, String title, String description, Date startDate, Date endDate, int schedule,
-			float lattitude, float longitude) {
+			float latitude, float longitude) {
 		this.telephone = telephone;
 		this.title = title;
 		this.description = description;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.schedule = schedule;
-		this.lattitude = lattitude;
+		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 
@@ -101,12 +101,12 @@ public class Externalcourse implements java.io.Serializable {
 		this.schedule = schedule;
 	}
 
-	public float getLattitude() {
-		return this.lattitude;
+	public float getLatitude() {
+		return this.latitude;
 	}
 
-	public void setLattitude(float lattitude) {
-		this.lattitude = lattitude;
+	public void setLatitude(float lattitude) {
+		this.latitude = lattitude;
 	}
 
 	public float getLongitude() {
