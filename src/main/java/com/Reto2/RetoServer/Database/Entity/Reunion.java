@@ -10,6 +10,10 @@ import java.util.Set;
  */
 public class Reunion implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8717766209919193552L;
 	private Integer reunionId;
 	private Professor professor;
 	private String title;

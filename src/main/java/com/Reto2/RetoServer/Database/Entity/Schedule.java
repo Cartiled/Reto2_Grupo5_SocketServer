@@ -9,6 +9,10 @@ import java.util.Set;
  */
 public class Schedule implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3240236576879026762L;
 	private Integer scheduleId;
 	private Client client;
 	private int scheduleDay;
