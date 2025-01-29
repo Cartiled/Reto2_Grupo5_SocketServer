@@ -13,6 +13,8 @@ public enum Events {
 	ON_LOGIN_PROFESSOR("onLoginProfessor"),
 	ON_REGISTER("onRegister"),
 	ON_REGISTER_AWNSER("onRegisterAwnser"),
+	ON_REGISTER_SUCCESS("onRegisterSuccess"),
+	ON_REGISTER_FALL("onRegisterFall"),
 	ON_REGISTER_SAME_PASSWORD("onRegisterSamePassword");
 	
 	public final String value;
