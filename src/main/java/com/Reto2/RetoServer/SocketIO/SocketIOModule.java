@@ -294,15 +294,26 @@ public class SocketIOModule {
 				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
 				if (!message.has("userId") || message == null) {
-					client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "Formato de datos invalido");
+					client.sendEvent(Events.ON_GET_REUNIONS_ERROR.value, "Formato de datos invalido");
 				}
 				int userId = message.get("userId").getAsInt();
 				List<Reunion> reunions = getReunions(userId);
-				System.out.println(reunions.get(2).getAssistants().toString());
-//				List<Assistant> assistants = new ArrayList<Assistant>();
+				String answerMessage = gson.toJson(reunions);
+				String asisstantsString = "";
+				System.out.println(answerMessage);
+				for (Reunion reunion : reunions) {
+//					Entramos en cada reunion individualmente
+					for (Assistant assistants : reunion.getAssistants()) {
+//						 Entramos en cada asistente de la reunion, y lo guardamos en un arrayList de
+//						 usuarios
+						asisstantsString.concat(assistants.getReunion().getReunionId().toString());
+						asisstantsString.concat(assistants.getProfessor().getClient().getUserName());
+					}
+					System.out.println(asisstantsString);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "Error de servidor");
+				client.sendEvent(Events.ON_GET_REUNIONS_ERROR.value, "Error de servidor");
 			}
 		});
 	}
@@ -485,7 +496,6 @@ public class SocketIOModule {
 		// Primero, conseguimos el id de las reuniones en las que el profesor esta
 		// tomando parte
 		String hql = "select a.reunion.reunionId from Assistant a where a.professor.userId = :userId";
-
 		Query<Integer> query = session.createQuery(hql, Integer.class);
 		query.setParameter("userId", userId);
 
@@ -497,7 +507,6 @@ public class SocketIOModule {
 			queryForReunions.setParameter("reunionId", reunionId);
 			reunions.add(queryForReunions.getSingleResult());
 		}
-
 		return reunions;
 	}
 }
