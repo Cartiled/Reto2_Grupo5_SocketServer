@@ -15,8 +15,8 @@ public class Professor implements java.io.Serializable {
 	private static final long serialVersionUID = 29662681295181430L;
 	private int userId;
 	private Client client;
-	private Set assistants = new HashSet(0);
-	private Set reunions = new HashSet(0);
+	private Set<Assistant> assistants = new HashSet<Assistant>(0);
+	private Set<Reunion> reunions = new HashSet<Reunion>(0);
 
 	public Professor() {
 	}
@@ -25,7 +25,7 @@ public class Professor implements java.io.Serializable {
 		this.client = client;
 	}
 
-	public Professor(Client client, Set assistants, Set reunions) {
+	public Professor(Client client, Set<Assistant> assistants, Set<Reunion> reunions) {
 		this.client = client;
 		this.assistants = assistants;
 		this.reunions = reunions;
@@ -47,19 +47,19 @@ public class Professor implements java.io.Serializable {
 		this.client = client;
 	}
 
-	public Set getAssistants() {
+	public Set<Assistant> getAssistants() {
 		return this.assistants;
 	}
 
-	public void setAssistants(Set assistants) {
+	public void setAssistants(Set<Assistant> assistants) {
 		this.assistants = assistants;
 	}
 
-	public Set getReunions() {
+	public Set<Reunion> getReunions() {
 		return this.reunions;
 	}
 
-	public void setReunions(Set reunions) {
+	public void setReunions(Set<Reunion> reunions) {
 		this.reunions = reunions;
 	}
 

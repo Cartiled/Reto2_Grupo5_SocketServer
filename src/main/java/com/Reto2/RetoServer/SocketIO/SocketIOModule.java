@@ -47,6 +47,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
 		server.addEventListener(Events.ON_GET_EXTERNAL_COURSES.value, String.class, this.getExternalCourses());
 		server.addEventListener(Events.ON_CHANGE_PASSWORD.value, String.class, this.changePassword());
+		server.addEventListener(Events.ON_GET_REUNIONS.value, String.class, this.getReunions());
 	}
 
 	private DataListener<String> login() {
@@ -146,15 +147,7 @@ public class SocketIOModule {
 					String pass = loginClient.getPass();
 
 					Student student = getStudentByUser(userName);
-					System.out.println(student.getUserYear());
 					Course course = getUserCourseByMatriculation(loginClient.getUserId());
-					System.out.println(course.getTitle());
-
-					System.out.println("userpass:" + userPass);
-
-					System.out.println(pass);
-
-					System.out.println("datos recogidos");
 					if (userPass.equals(pass)) {
 						System.out.println("La contraseña es igual que la anterior");
 						client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value,
@@ -288,6 +281,25 @@ public class SocketIOModule {
 					client.sendEvent(Events.ON_CHANGE_PASSWORD_ANSWER.value, "OK!");
 				else
 					client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "No se ha podido cambiar la contraseña");
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> getReunions() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (!message.has("userId") || message == null) {
+					client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "Formato de datos invalido");
+				}
+				int userId = message.get("userId").getAsInt();
+				List<Reunion> reunions = getReunions(userId);
+				System.out.println(reunions.get(2).getAssistants().toString());
+//				List<Assistant> assistants = new ArrayList<Assistant>();
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "Error de servidor");
@@ -445,7 +457,7 @@ public class SocketIOModule {
 		Transaction tx = null;
 		try {
 			String query = "from Client as c where userId=:userId";
-			Query<Client> queryResult = session.createQuery(query);
+			Query<Client> queryResult = session.createQuery(query, Client.class);
 			queryResult.setParameter("userId", userId);
 			queryResult.setMaxResults(1);
 			Client client = queryResult.uniqueResult();
@@ -469,4 +481,23 @@ public class SocketIOModule {
 		}
 	}
 
+	private List<Reunion> getReunions(int userId) {
+		// Primero, conseguimos el id de las reuniones en las que el profesor esta
+		// tomando parte
+		String hql = "select a.reunion.reunionId from Assistant a where a.professor.userId = :userId";
+
+		Query<Integer> query = session.createQuery(hql, Integer.class);
+		query.setParameter("userId", userId);
+
+		// Despues, añadimos las reuniones en las que esta presente el profesor
+		List<Reunion> reunions = new ArrayList<Reunion>();
+		for (Integer reunionId : query.list()) {
+			String hqlForReunions = "from Reunion where reunionId =: reunionId";
+			Query<Reunion> queryForReunions = session.createQuery(hqlForReunions, Reunion.class);
+			queryForReunions.setParameter("reunionId", reunionId);
+			reunions.add(queryForReunions.getSingleResult());
+		}
+
+		return reunions;
+	}
 }

@@ -1,7 +1,7 @@
 package com.Reto2.RetoServer.Database.Entity;
-// Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final
+// Generated 29 ene 2025 15:24:49 by Hibernate Tools 6.2.5.Final
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,42 +10,29 @@ import java.util.Set;
  */
 public class Reunion implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8717766209919193552L;
+	private static final long serialVersionUID = -302842241366381047L;
 	private Integer reunionId;
 	private Professor professor;
 	private String title;
 	private String affair;
-	private Timestamp dayAndHour;
+	private Date day;
 	private String class_;
-	private int sendedRequest;
-	private String reunionState;
-	private Set assistants = new HashSet(0);
+	private int reunionState;
+	private int hour;
+	private Set<Assistant> assistants = new HashSet<Assistant>(0);
 
 	public Reunion() {
 	}
 
-	public Reunion(String title, String affair, Timestamp dayAndHour, String class_, int sendedRequest,
-			String reunionState) {
-		this.title = title;
-		this.affair = affair;
-		this.dayAndHour = dayAndHour;
-		this.class_ = class_;
-		this.sendedRequest = sendedRequest;
-		this.reunionState = reunionState;
-	}
-
-	public Reunion(Professor professor, String title, String affair, Timestamp dayAndHour, String class_,
-			int sendedRequest, String reunionState, Set assistants) {
+	public Reunion(Professor professor, String title, String affair, Date day, String class_, int reunionState,
+			int hour, Set<Assistant> assistants) {
 		this.professor = professor;
 		this.title = title;
 		this.affair = affair;
-		this.dayAndHour = dayAndHour;
+		this.day = day;
 		this.class_ = class_;
-		this.sendedRequest = sendedRequest;
 		this.reunionState = reunionState;
+		this.hour = hour;
 		this.assistants = assistants;
 	}
 
@@ -81,12 +68,12 @@ public class Reunion implements java.io.Serializable {
 		this.affair = affair;
 	}
 
-	public Timestamp getDayAndHour() {
-		return this.dayAndHour;
+	public Date getDay() {
+		return this.day;
 	}
 
-	public void setDayAndHour(Timestamp dayAndHour) {
-		this.dayAndHour = dayAndHour;
+	public void setDay(Date day) {
+		this.day = day;
 	}
 
 	public String getClass_() {
@@ -97,27 +84,27 @@ public class Reunion implements java.io.Serializable {
 		this.class_ = class_;
 	}
 
-	public int getSendedRequest() {
-		return this.sendedRequest;
-	}
-
-	public void setSendedRequest(int sendedRequest) {
-		this.sendedRequest = sendedRequest;
-	}
-
-	public String getReunionState() {
+	public int getReunionState() {
 		return this.reunionState;
 	}
 
-	public void setReunionState(String reunionState) {
+	public void setReunionState(int reunionState) {
 		this.reunionState = reunionState;
 	}
 
-	public Set getAssistants() {
+	public int getHour() {
+		return this.hour;
+	}
+
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	public Set<Assistant> getAssistants() {
 		return this.assistants;
 	}
 
-	public void setAssistants(Set assistants) {
+	public void setAssistants(Set<Assistant> assistants) {
 		this.assistants = assistants;
 	}
 
