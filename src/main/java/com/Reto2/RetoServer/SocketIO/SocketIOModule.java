@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import com.Reto2.RetoServer.Config.Events;
@@ -45,6 +46,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
 		server.addEventListener(Events.ON_GET_EXTERNAL_COURSES.value, String.class, this.getExternalCourses());
+		server.addEventListener(Events.ON_CHANGE_PASSWORD.value, String.class, this.changePassword());
 	}
 
 	private DataListener<String> login() {
@@ -61,7 +63,6 @@ public class SocketIOModule {
 
 				String userName = jsonObject.get("message").getAsString();
 				String userPass = jsonObject.get("userPass").getAsString();
-				
 
 				Client loginClient = sendClient(userName);
 				String name = loginClient.getUserName();
@@ -71,20 +72,14 @@ public class SocketIOModule {
 				if (loginClient.getRegistered() == true) {
 					System.out.println("usuario registrado");
 					if (userName.equals(name) && userPass.equals(pass)) {
-<<<<<<< HEAD
-						String answerMessage = gson.toJson(loginClient);
+						JsonObject responseJson = new JsonObject();
+						responseJson.add("loginClient", gson.toJsonTree(loginClient));
+						responseJson.add("student", gson.toJsonTree(student));
+						responseJson.add("course", gson.toJsonTree(course));
+						String answerMessage = gson.toJson(responseJson);
 						MessageOutput messageOutput = new MessageOutput(answerMessage);
+
 						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
-=======
-						   JsonObject responseJson = new JsonObject();
-		                    responseJson.add("loginClient", gson.toJsonTree(loginClient));
-		                    responseJson.add("student", gson.toJsonTree(student));
-		                    responseJson.add("course", gson.toJsonTree(course));
-						   	String answerMessage = gson.toJson(responseJson);
-	                        MessageOutput messageOutput = new MessageOutput(answerMessage);
-	                        
-		                    client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
->>>>>>> 356b07a57ae035631a455aab8e12a78884fdc2a7
 					} else {
 						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
 						System.out.println("El usuario no ha podido loguearse: " + userName);
@@ -92,12 +87,12 @@ public class SocketIOModule {
 				} else {
 					System.out.println("usuario no registrado");
 					JsonObject responseJson = new JsonObject();
-                    responseJson.add("loginClient", gson.toJsonTree(loginClient));
-                    responseJson.add("student", gson.toJsonTree(student));
-                    responseJson.add("course", gson.toJsonTree(course));
-				   	String answerMessage = gson.toJson(responseJson);
-                    MessageOutput messageOutput = new MessageOutput(answerMessage);
-					client.sendEvent(Events.ON_REGISTER.value,messageOutput);
+					responseJson.add("loginClient", gson.toJsonTree(loginClient));
+					responseJson.add("student", gson.toJsonTree(student));
+					responseJson.add("course", gson.toJsonTree(course));
+					String answerMessage = gson.toJson(responseJson);
+					MessageOutput messageOutput = new MessageOutput(answerMessage);
+					client.sendEvent(Events.ON_REGISTER.value, messageOutput);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -136,57 +131,58 @@ public class SocketIOModule {
 					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
 					System.out.println(jsonObject.toString());
 					System.out.println("Datos incorrecto");
-				}else {
-				String userName = jsonObject.get("username").getAsString();
-				String userPass = jsonObject.get("userpass").getAsString();
-				String userSurname = jsonObject.get("surname").getAsString();
-				String userSecondSurname = jsonObject.get("secondsurname").getAsString();
-				String userDni = jsonObject.get("dni").getAsString();
-				String userDirection = jsonObject.get("direction").getAsString();
-				int userTelephone = jsonObject.get("telephone").getAsInt();
-				char userYear = jsonObject.get("year").getAsCharacter();
-				String userCourseName = jsonObject.get("courseName").getAsString();
-				Boolean userDual = jsonObject.get("dual").getAsBoolean();
-				Client loginClient = sendClient(userName);
-				String pass = loginClient.getPass();
-				
-				Student student = getStudentByUser(userName);
-				System.out.println(student.getUserYear());
-				Course course = getUserCourseByMatriculation(loginClient.getUserId());
-				System.out.println(course.getTitle());
-				
-				System.out.println("userpass:" + userPass);
-				
-				System.out.println(pass);
-				
-				System.out.println("datos recogidos");
-				if (userPass.equals(pass)) {
-					System.out.println("La contraseña es igual que la anterior");
-					client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value, "Escoge una contraseña que sea diferente");
 				} else {
-					if (userName.equals(loginClient.getUserName()) && userSurname.equals(loginClient.getSurname())
-							&& userSecondSurname.equals(loginClient.getSecondSurname())
-							&& userDni.equals(loginClient.getDni()) && userDirection.equals(loginClient.getDirection())
-							&& userTelephone == loginClient.getTelephone() && userYear == student.getUserYear()
-							&& userCourseName.equals(course.getTitle()) && userDual == student.isIntensiveDual()) {
-						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
-						System.out.println("todo correcto");
+					String userName = jsonObject.get("username").getAsString();
+					String userPass = jsonObject.get("userpass").getAsString();
+					String userSurname = jsonObject.get("surname").getAsString();
+					String userSecondSurname = jsonObject.get("secondsurname").getAsString();
+					String userDni = jsonObject.get("dni").getAsString();
+					String userDirection = jsonObject.get("direction").getAsString();
+					int userTelephone = jsonObject.get("telephone").getAsInt();
+					char userYear = jsonObject.get("year").getAsCharacter();
+					String userCourseName = jsonObject.get("courseName").getAsString();
+					Boolean userDual = jsonObject.get("dual").getAsBoolean();
+					Client loginClient = sendClient(userName);
+					String pass = loginClient.getPass();
+
+					Student student = getStudentByUser(userName);
+					System.out.println(student.getUserYear());
+					Course course = getUserCourseByMatriculation(loginClient.getUserId());
+					System.out.println(course.getTitle());
+
+					System.out.println("userpass:" + userPass);
+
+					System.out.println(pass);
+
+					System.out.println("datos recogidos");
+					if (userPass.equals(pass)) {
+						System.out.println("La contraseña es igual que la anterior");
+						client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value,
+								"Escoge una contraseña que sea diferente");
 					} else {
-						client.sendEvent(Events.ON_REGISTER_FAIL.value,	"Por favor, comprueba los datos que estan correctos");					
+						if (userName.equals(loginClient.getUserName()) && userSurname.equals(loginClient.getSurname())
+								&& userSecondSurname.equals(loginClient.getSecondSurname())
+								&& userDni.equals(loginClient.getDni())
+								&& userDirection.equals(loginClient.getDirection())
+								&& userTelephone == loginClient.getTelephone() && userYear == student.getUserYear()
+								&& userCourseName.equals(course.getTitle()) && userDual == student.isIntensiveDual()) {
+							client.sendEvent(Events.ON_REGISTER_SUCCESS.value,
+									"Has registrado tu usuario correctamente");
+							System.out.println("todo correcto");
+						} else {
+							client.sendEvent(Events.ON_REGISTER_FAIL.value,
+									"Por favor, comprueba los datos que estan correctos");
+						}
 					}
 				}
-				}
-			}catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-				client.sendEvent(Events.ON_REGISTER_FAIL.value,	"Error del servidor");	
+				client.sendEvent(Events.ON_REGISTER_FAIL.value, "Error del servidor");
 			}
-			
+
 		});
 
 	}
-
-
-	
 
 	private DataListener<String> filterBySubject() {
 		return ((client, data, ackSender) -> {
@@ -274,6 +270,27 @@ public class SocketIOModule {
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_GET_EXTERNAL_COURSES_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> changePassword() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+				if (!jsonObject.has("userId") || !jsonObject.has("newPassword")) {
+					client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "Formato de datos invalido");
+				}
+				int userId = jsonObject.get("userId").getAsInt();
+				String newPassword = jsonObject.get("newPassword").getAsString();
+				if (changeUserPassword(userId, newPassword))
+					client.sendEvent(Events.ON_CHANGE_PASSWORD_ANSWER.value, "OK!");
+				else
+					client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "No se ha podido cambiar la contraseña");
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "Error de servidor");
 			}
 		});
 	}
@@ -423,4 +440,33 @@ public class SocketIOModule {
 		List<Externalcourse> externalCourse = query.list();
 		return externalCourse;
 	}
+
+	private boolean changeUserPassword(int userId, String newPassword) {
+		Transaction tx = null;
+		try {
+			String query = "from Client as c where userId=:userId";
+			Query<Client> queryResult = session.createQuery(query);
+			queryResult.setParameter("userId", userId);
+			queryResult.setMaxResults(1);
+			Client client = queryResult.uniqueResult();
+
+			if (client == null) {
+				return false;
+			}
+
+			client.setPass(newPassword);
+
+			tx = session.beginTransaction();
+			session.update(client);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 }

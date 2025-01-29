@@ -25,7 +25,10 @@ public enum Events {
 	ON_REGISTER_SAME_PASSWORD("onRegisterSamePassword"),
 	ON_GET_EXTERNAL_COURSES_ANSWER("onExternalCourseAnswer"),
     ON_GET_EXTERNAL_COURSES_ERROR("onExternalCourseError"),
-    ON_GET_EXTERNAL_COURSES("onExternalCourse");
+    ON_GET_EXTERNAL_COURSES("onExternalCourse"),
+    ON_CHANGE_PASSWORD("onChangePassword"),
+    ON_CHANGE_PASSWORD_FAIL("onChangePasswordFail"),
+    ON_CHANGE_PASSWORD_ANSWER("onChangePasswordAnswer");
 	
 	
 	
