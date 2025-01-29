@@ -1,5 +1,5 @@
 package com.Reto2.RetoServer.Database.Entity;
-// Generated 17 ene 2025, 15:37:13 by Hibernate Tools 6.5.1.Final
+// Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final
 
 import java.sql.Date;
 
@@ -62,10 +62,4 @@ public class Matriculation implements java.io.Serializable {
 		this.matriculationDate = matriculationDate;
 	}
 
-	@Override
-	public String toString() {
-		return "Matriculation [matriculationId=" + matriculationId + ", student=" + student + ", course=" + course
-				+ ", matriculationDate=" + matriculationDate + "]";
-	}
-	
 }

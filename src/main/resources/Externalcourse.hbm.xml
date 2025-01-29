@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Externalcourse" optimistic-lock="none" table="externalcourse">
+        <id name="externalCourseId" type="java.lang.Integer">
+            <column name="externalCourseID"/>
+            <generator class="identity"/>
+        </id>
+        <property name="telephone" type="int">
+            <column name="telephone" not-null="true"/>
+        </property>
+        <property name="title" type="string">
+            <column length="40" name="title" not-null="true"/>
+        </property>
+        <property name="description" type="string">
+            <column length="100" name="description" not-null="true"/>
+        </property>
+        <property name="startDate" type="date">
+            <column length="10" name="startDate" not-null="true"/>
+        </property>
+        <property name="endDate" type="date">
+            <column length="10" name="endDate" not-null="true"/>
+        </property>
+        <property name="schedule" type="int">
+            <column name="schedule" not-null="true"/>
+        </property>
+        <property name="lattitude" type="float">
+            <column name="lattitude" not-null="true" precision="12"/>
+        </property>
+        <property name="longitude" type="float">
+            <column name="longitude" not-null="true" precision="12"/>
+        </property>
+    </class>
+</hibernate-mapping>

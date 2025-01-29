@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 17 ene 2025, 15:37:14 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Schedule" optimistic-lock="none" table="schedule">
         <id name="scheduleId" type="java.lang.Integer">
@@ -12,11 +12,11 @@
         <property name="scheduleDay" type="int">
             <column name="ScheduleDay" not-null="true"/>
         </property>
-        <property name="scheduleWeek" type="int">
-            <column name="ScheduleWeek" not-null="true"/>
-        </property>
         <property name="tipoDato" type="string">
             <column length="40" name="TipoDato" not-null="true"/>
+        </property>
+        <property name="scheduleHour" type="string">
+            <column length="45" name="ScheduleHour" not-null="true"/>
         </property>
         <set fetch="select" inverse="true" lazy="true" name="courses" table="course">
             <key>
