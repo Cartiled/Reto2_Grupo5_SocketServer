@@ -15,6 +15,7 @@ public class Professor implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 29662681295181430L;
+	@Expose
 	private int userId;
 	private Client client;
 	private Set<Assistant> assistants = new HashSet<Assistant>(0);

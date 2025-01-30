@@ -28,6 +28,7 @@ public class Reunion implements java.io.Serializable {
 	private int reunionState;
 	@Expose
 	private int hour;
+	@Expose
 	private Set<Assistant> assistants = new HashSet<Assistant>(0);
 
 	public Reunion() {

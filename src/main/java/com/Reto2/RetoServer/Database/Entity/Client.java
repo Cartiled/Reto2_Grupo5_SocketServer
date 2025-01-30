@@ -55,7 +55,7 @@ public class Client implements java.io.Serializable {
 	}
 
 	public Client(String userName, String surname, String secondSurname, String pass, String dni, String direction,
-			int telephone, boolean userType, Boolean registered, Student student, Professor professor, Set schedules) {
+			int telephone, boolean userType, Boolean registered, Student student, Professor professor, Set<Schedule> schedules) {
 		this.userName = userName;
 		this.surname = surname;
 		this.secondSurname = secondSurname;
@@ -166,11 +166,11 @@ public class Client implements java.io.Serializable {
 		this.professor = professor;
 	}
 
-	public Set getSchedules() {
+	public Set<Schedule> getSchedules() {
 		return this.schedules;
 	}
 
-	public void setSchedules(Set schedules) {
+	public void setSchedules(Set<Schedule> schedules) {
 		this.schedules = schedules;
 	}
 

@@ -3,6 +3,7 @@ package com.Reto2.RetoServer.SocketIO;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -64,15 +65,16 @@ public class SocketIOModule {
 
 				String userName = jsonObject.get("message").getAsString();
 				String userPass = jsonObject.get("userPass").getAsString();
-
+				System.out.println(userName);
 				Client loginClient = sendClient(userName);
 				String name = loginClient.getUserName();
 				String pass = loginClient.getPass();
 				Student student = getStudentByUser(userName);
 				Course course = getUserCourseByMatriculation(loginClient.getUserId());
-				if (loginClient.getRegistered() == true) {
-					System.out.println("usuario registrado");
-					if (userName.equals(name) && userPass.equals(pass)) {
+
+				if (userName.equals(name) && userPass.equals(pass)) {
+					if (loginClient.getRegistered() == true) {
+						System.out.println("usuario registrado");
 						JsonObject responseJson = new JsonObject();
 						responseJson.add("loginClient", gson.toJsonTree(loginClient));
 						responseJson.add("student", gson.toJsonTree(student));
@@ -82,18 +84,19 @@ public class SocketIOModule {
 
 						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
 					} else {
-						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
-						System.out.println("El usuario no ha podido loguearse: " + userName);
+
+						System.out.println("usuario no registrado");
+						JsonObject responseJson = new JsonObject();
+						responseJson.add("loginClient", gson.toJsonTree(loginClient));
+						responseJson.add("student", gson.toJsonTree(student));
+						responseJson.add("course", gson.toJsonTree(course));
+						String answerMessage = gson.toJson(responseJson);
+						MessageOutput messageOutput = new MessageOutput(answerMessage);
+						client.sendEvent(Events.ON_REGISTER.value, messageOutput);
 					}
 				} else {
-					System.out.println("usuario no registrado");
-					JsonObject responseJson = new JsonObject();
-					responseJson.add("loginClient", gson.toJsonTree(loginClient));
-					responseJson.add("student", gson.toJsonTree(student));
-					responseJson.add("course", gson.toJsonTree(course));
-					String answerMessage = gson.toJson(responseJson);
-					MessageOutput messageOutput = new MessageOutput(answerMessage);
-					client.sendEvent(Events.ON_REGISTER.value, messageOutput);
+					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
+					System.out.println("El usuario no ha podido loguearse: " + userName);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -291,7 +294,8 @@ public class SocketIOModule {
 	private DataListener<String> getReunions() {
 		return ((client, data, ackSender) -> {
 			try {
-				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().serializeNulls()
+						.setPrettyPrinting().create();
 				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
 				if (!message.has("userId") || message == null) {
 					client.sendEvent(Events.ON_GET_REUNIONS_ERROR.value, "Formato de datos invalido");
@@ -299,18 +303,8 @@ public class SocketIOModule {
 				int userId = message.get("userId").getAsInt();
 				List<Reunion> reunions = getReunions(userId);
 				String answerMessage = gson.toJson(reunions);
-				String asisstantsString = "";
 				System.out.println(answerMessage);
-				for (Reunion reunion : reunions) {
-//					Entramos en cada reunion individualmente
-					for (Assistant assistants : reunion.getAssistants()) {
-//						 Entramos en cada asistente de la reunion, y lo guardamos en un arrayList de
-//						 usuarios
-						asisstantsString.concat(assistants.getReunion().getReunionId().toString());
-						asisstantsString.concat(assistants.getProfessor().getClient().getUserName());
-					}
-					System.out.println(asisstantsString);
-				}
+				client.sendEvent(Events.ON_GET_REUNIONS_ANSWER.value, answerMessage);
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_GET_REUNIONS_ERROR.value, "Error de servidor");
@@ -493,20 +487,14 @@ public class SocketIOModule {
 	}
 
 	private List<Reunion> getReunions(int userId) {
-		// Primero, conseguimos el id de las reuniones en las que el profesor esta
-		// tomando parte
-		String hql = "select a.reunion.reunionId from Assistant a where a.professor.userId = :userId";
-		Query<Integer> query = session.createQuery(hql, Integer.class);
-		query.setParameter("userId", userId);
+		String hql = "SELECT DISTINCT r FROM Reunion r " + "LEFT JOIN FETCH r.assistants a "
+				+ "LEFT JOIN FETCH a.professor " + "WHERE r.reunionId IN ("
+				+ "    SELECT a.reunion.reunionId FROM Assistant a " + "    WHERE a.professor.userId = :userId"
+				+ ") order by a.reunion.reunionId";
 
-		// Despues, añadimos las reuniones en las que esta presente el profesor
-		List<Reunion> reunions = new ArrayList<Reunion>();
-		for (Integer reunionId : query.list()) {
-			String hqlForReunions = "from Reunion where reunionId =: reunionId";
-			Query<Reunion> queryForReunions = session.createQuery(hqlForReunions, Reunion.class);
-			queryForReunions.setParameter("reunionId", reunionId);
-			reunions.add(queryForReunions.getSingleResult());
-		}
-		return reunions;
+		Query<Reunion> query = session.createQuery(hql, Reunion.class);
+		query.setParameter("userId", userId);
+		return query.getResultList();
+
 	}
 }

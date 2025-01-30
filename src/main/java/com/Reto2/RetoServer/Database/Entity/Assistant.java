@@ -13,6 +13,7 @@ public class Assistant implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 128616636880581808L;
 	private Integer assistantId;
+	@Expose
 	private Professor professor;
 	private Reunion reunion;
 
