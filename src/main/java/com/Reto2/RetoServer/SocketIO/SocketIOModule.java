@@ -53,6 +53,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_ACCEPT_REUNION.value, String.class, this.acceptReunion());
 		server.addEventListener(Events.ON_REJECT_REUNION.value, String.class, this.rejectReunion());
 		server.addEventListener(Events.ON_FORCE_REUNION.value, String.class, this.forceReunion());
+		server.addEventListener(Events.ON_CREATE_REUNION.value, String.class, this.createReunion());
 
 	}
 
@@ -328,6 +329,7 @@ public class SocketIOModule {
 				}
 				int userId = message.get("userId").getAsInt();
 				List<Reunion> reunions = getReunions(userId);
+				List<Professor> professors = getProfessors();
 				String answerMessage = gson.toJson(reunions);
 				System.out.println(answerMessage);
 				client.sendEvent(Events.ON_GET_REUNIONS_ANSWER.value, answerMessage);
@@ -394,6 +396,29 @@ public class SocketIOModule {
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_ACCEPT_REUNION_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> createReunion() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+				if (jsonObject == null || !jsonObject.has("reunionTheme") || !jsonObject.has("reunionReason")
+						|| !jsonObject.has("reunionDate") || !jsonObject.has("reunionHour")
+						|| !jsonObject.has("reunionClass") || !jsonObject.has("reunionProfessors")
+						|| !jsonObject.has("reunionProfessorId")) {
+					client.sendEvent(Events.ON_CREATE_REUNION_ERROR.value, "Formato de datos invalido");
+				}
+				Reunion newReunion = new Reunion();
+				if (createReunionInDatabase(newReunion))
+					client.sendEvent(Events.ON_CREATE_REUNION_ANSWER.value, "OK!");
+				else
+					client.sendEvent(Events.ON_CREATE_REUNION_ERROR.value, "No se ha podido crear la reunion");
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_CREATE_REUNION_ERROR.value, "Error de servidor");
 			}
 		});
 	}
@@ -717,5 +742,30 @@ public class SocketIOModule {
 		query.setParameter("userId", userId);
 		return query.getResultList();
 
+	}
+
+	private List<Professor> getProfessors() {
+		String hql = "from Professor";
+		Query<Professor> query = session.createQuery(hql, Professor.class);
+		return query.getResultList();
+	}
+
+	private boolean createReunionInDatabase(Reunion reunion) {
+		Transaction tx = null;
+		try {
+			if (reunion == null) {
+				return false;
+			}
+			tx = session.beginTransaction();
+			session.save(reunion);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
