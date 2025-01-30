@@ -50,69 +50,167 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
+		server.addEventListener(Events.ON_FILTER_BY_SCHEDULE.value, String.class, this.scheduleFilter());
 	}
 
 	private DataListener<String> login() {
+
 		return ((client, data, ackSender) -> {
+
 			try {
+
 				System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+
 				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
 				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
 				if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
+
 					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
+
 					System.out.println("Datos incorrecto");
+
 				}
 
 				String userName = jsonObject.get("message").getAsString();
+
 				String userPass = jsonObject.get("userPass").getAsString();
 
+				System.out.println(userName + ":" + userPass);
+
 				Client loginClient = sendClient(userName);
-<<<<<<< HEAD
-				Student student = getStudentByUser(userName);
+
 				String name = loginClient.getUserName();
+
 				String pass = loginClient.getPass();
 
-				KeyPairGenerator key = KeyPairGenerator.getInstance("RSA");
-				key.initialize(1024);
-				KeyPair keyPair = key.generateKeyPair();
-				PublicKey publicKey = keyPair.getPublic();
-				PrivateKey privateKey = keyPair.getPrivate();
+				Boolean userType = loginClient.isUserType();
 
-				String msg = pass;
+				if (userName.equalsIgnoreCase(name) && userPass.equals(pass)) {
 
-				encriptar(null, publicKey, data);
-				desencriptar(null, privateKey, data);
+					if (loginClient.getRegistered() == true) {
 
-				byte[] msgEncryptedBytes = encriptar(msg.getBytes(), publicKey, key.getAlgorithm());
-				System.out.println("Texto encriptado -> " + new String(msgEncryptedBytes));
+						if (userType == true) {
 
-				byte[] msgDecryptedBytes = desencriptar(msgEncryptedBytes, privateKey, key.getAlgorithm());
-				System.out.println("Texto desencriptado -> " + new String(msgDecryptedBytes));
+							System.out.println("usuario registrado");
 
-				if (loginClient.getRegistered() == true) {
-					System.out.println("usuario registrado");
-					if (userName.equals(name) && userPass.equals(pass)) {
-						System.out.println(loginClient.toString());
+							JsonObject responseJson = new JsonObject();
 
-						String answerMessage = gson.toJson(loginClient);
-						MessageOutput messageOutput = new MessageOutput(answerMessage);
-						client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
-						System.out.println("El usuario ha sido logueado correctamente: " + userName);
+							Professor professor = getProfessorByUser(userName);
+
+							responseJson.add("loginClient", gson.toJsonTree(loginClient));
+
+							responseJson.add("professor", gson.toJsonTree(professor));
+
+							String answerMessage = gson.toJson(responseJson);
+
+							MessageOutput messageOutput = new MessageOutput(answerMessage);
+
+							client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
+
+						} else {
+
+							System.out.println("usuario registrado");
+
+							JsonObject responseJson = new JsonObject();
+
+							Student student = getStudentByUser(userName);
+
+							Course course = getUserCourseByMatriculation(loginClient.getUserId());
+
+							responseJson.add("loginClient", gson.toJsonTree(loginClient));
+
+							responseJson.add("student", gson.toJsonTree(student));
+
+							responseJson.add("course", gson.toJsonTree(course));
+
+							String answerMessage = gson.toJson(responseJson);
+
+							MessageOutput messageOutput = new MessageOutput(answerMessage);
+
+							client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
+
+						}
+
 					} else {
-						client.sendEvent(Events.ON_LOGIN_FALL.value, "Login incorrecto");
-						System.out.println("El usuario no ha podido loguearse: " + userName);
+
+						if (userType == true) {
+
+							System.out.println("usuario registrado");
+
+							JsonObject responseJson = new JsonObject();
+
+							Professor professor = getProfessorByUser(userName);
+
+							responseJson.add("loginClient", gson.toJsonTree(loginClient));
+
+							responseJson.add("professor", gson.toJsonTree(professor));
+
+							String answerMessage = gson.toJson(responseJson);
+
+							MessageOutput messageOutput = new MessageOutput(answerMessage);
+
+							client.sendEvent(Events.ON_REGISTER.value, messageOutput);
+
+						} else {
+
+							System.out.println("usuario no registrado");
+
+							JsonObject responseJson = new JsonObject();
+
+							Student student = getStudentByUser(userName);
+
+							Course course = getUserCourseByMatriculation(loginClient.getUserId());
+
+							responseJson.add("loginClient", gson.toJsonTree(loginClient));
+
+							responseJson.add("student", gson.toJsonTree(student));
+
+							responseJson.add("course", gson.toJsonTree(course));
+
+							String answerMessage = gson.toJson(responseJson);
+
+							MessageOutput messageOutput = new MessageOutput(answerMessage);
+
+							client.sendEvent(Events.ON_REGISTER.value, messageOutput);
+
+						}
+
 					}
+
 				} else {
-					System.out.println("usuario no registrado");
-					client.sendEvent(Events.ON_REGISTER.value, "Registrate porfavor");
+
+					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
+
+					System.out.println("El usuario no ha podido loguearse: " + userName);
+
 				}
+
 			} catch (Exception e) {
+
 				e.printStackTrace();
-<<<<<<< HEAD
-				client.sendEvent(Events.ON_LOGIN_FALL.value, "Error de servidor");
+
+				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Error de servidor");
+
 			}
+
 		});
+
+	}
+
+	public Professor getProfessorByUser(String registerName) {
+		String hql = "from Professor where client.userName =:registerName";
+		Query<Professor> query = session.createQuery(hql, Professor.class);
+		query.setParameter("registerName", registerName);
+		Professor professor = null;
+		try {
+			professor = query.getSingleResult();
+		} catch (NoResultException e) {
+			System.out.println("No client found with the username: " + registerName);
+		}
+		return professor;
+
 	}
 
 	public static byte[] encriptar(byte[] inputBytes, PublicKey publicKey, String algorithm) {
@@ -241,6 +339,28 @@ public class SocketIOModule {
 		});
 	}
 
+	private DataListener<String> scheduleFilter() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+					List<Subject> subject = getSchedulesSubjects(userId);
+					String jsonDocuments = gson.toJson(subject);
+					System.out.println(jsonDocuments);
+					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
 	private DataListener<String> filterByCycle() {
 		return ((client, data, ackSender) -> {
 			try {
@@ -257,8 +377,9 @@ public class SocketIOModule {
 						links.add(document.getLink());
 					}
 					String jsonDocuments = gson.toJson(links);
-					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
 				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
@@ -383,6 +504,20 @@ public class SocketIOModule {
 
 	}
 
+	public List<Subject> getSchedulesSubjects(int userId) {
+		List<Subject> subject = new ArrayList<Subject>();
+		String hql = "from Schedule s where s.client = :userId";
+		Query<Subject> query = session.createQuery(hql, Subject.class);
+		query.setParameter("userId", userId);
+
+		try {
+			subject = query.getResultList();
+		} catch (NoResultException e) {
+			System.out.println("No client found with the ID: " + userId);
+		}
+		return subject;
+
+	}
 	public List<Client> getAllClient() {
 		List<Client> clients = new ArrayList<Client>();
 		String hql = "Select * from Client";

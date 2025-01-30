@@ -12,8 +12,9 @@
         <property name="scheduleDay" type="int">
             <column name="ScheduleDay" not-null="true"/>
         </property>
-        <property name="tipoDato" type="string">
-            <column length="40" name="TipoDato" not-null="true"/>
+        <property name="subjectId" type="int">
+            <column name="subjectId" not-null="true"/>
+            
         </property>
         <property name="scheduleHour" type="string">
             <column length="45" name="ScheduleHour" not-null="true"/>
@@ -23,6 +24,12 @@
                 <column name="ScheduleID" not-null="true"/>
             </key>
             <one-to-many class="com.Reto2.RetoServer.Database.Entity.Course"/>
+        </set>
+        <set fetch="select" inverse="true" lazy="true" name="subjects" table="subject">
+            <key>
+                <column name="subjectID"/>
+            </key>
+            <one-to-many class="com.Reto2.RetoServer.Database.Entity.Subject"/>
         </set>
     </class>
 </hibernate-mapping>

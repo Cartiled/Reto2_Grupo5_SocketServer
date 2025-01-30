@@ -12,23 +12,24 @@ public class Schedule implements java.io.Serializable {
 	private Integer scheduleId;
 	private Client client;
 	private int scheduleDay;
-	private String tipoDato;
+	private int subjectId;
 	private String scheduleHour;
 	private Set courses = new HashSet(0);
+	private Set subjects = new HashSet(0);
 
 	public Schedule() {
 	}
 
-	public Schedule(int scheduleDay, String tipoDato, String scheduleHour) {
+	public Schedule(int scheduleDay, int subjectId, String scheduleHour) {
 		this.scheduleDay = scheduleDay;
-		this.tipoDato = tipoDato;
+		this.subjectId = subjectId;
 		this.scheduleHour = scheduleHour;
 	}
 
-	public Schedule(Client client, int scheduleDay, String tipoDato, String scheduleHour, Set courses) {
+	public Schedule(Client client, int scheduleDay, int subjectId, String scheduleHour, Set courses) {
 		this.client = client;
 		this.scheduleDay = scheduleDay;
-		this.tipoDato = tipoDato;
+		this.subjectId = subjectId;
 		this.scheduleHour = scheduleHour;
 		this.courses = courses;
 	}
@@ -57,12 +58,12 @@ public class Schedule implements java.io.Serializable {
 		this.scheduleDay = scheduleDay;
 	}
 
-	public String getTipoDato() {
-		return this.tipoDato;
+	public int getSubjectId() {
+		return this.subjectId;
 	}
 
-	public void setTipoDato(String tipoDato) {
-		this.tipoDato = tipoDato;
+	public void setSubjectId(int subjectId) {
+		this.subjectId = subjectId;
 	}
 
 	public String getScheduleHour() {
@@ -79,6 +80,14 @@ public class Schedule implements java.io.Serializable {
 
 	public void setCourses(Set courses) {
 		this.courses = courses;
+	}
+
+	public Set getSubjects() {
+		return subjects;
+	}
+
+	public void setSubjects(Set subjects) {
+		this.subjects = subjects;
 	}
 
 }
