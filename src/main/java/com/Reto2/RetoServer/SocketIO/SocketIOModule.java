@@ -168,9 +168,9 @@ public class SocketIOModule {
 				} else {
 					System.out.println("aqui empieza el registro");
 					String userName = jsonObject.get("username").getAsString();
-					String userPass = jsonObject.get("userpass").getAsString();
 					String userSurname = jsonObject.get("surname").getAsString();
 					String userSecondSurname = jsonObject.get("secondsurname").getAsString();
+					String userPass = jsonObject.get("userpass").getAsString();
 					String userDni = jsonObject.get("dni").getAsString();
 					String userDirection = jsonObject.get("direction").getAsString();
 					int userTelephone = jsonObject.get("telephone").getAsInt();
@@ -184,7 +184,7 @@ public class SocketIOModule {
 						client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value,
 								"Escoge una contraseña que sea diferente");
 					} else {
-						Client newUserData = new Client(userName, userPass, userSurname, userSecondSurname, userDni,
+						Client newUserData = new Client(userName, userSurname, userSecondSurname, userPass, userDni,
 								userDirection, userTelephone, true);
 						updateUserData(loginClient.getUserName(), newUserData);
 						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
@@ -344,18 +344,21 @@ public class SocketIOModule {
 		transaction = session.beginTransaction();
 		String hql = "from Client where userName  =:loginUserName";
 		Query<?> q = session.createQuery(hql);
+		q.setParameter("loginUserName", loginUserName);
 		q.setMaxResults(1);
 
 		Client user = (Client) q.getSingleResult();
-		user.setUserName(client.getUserName());
-		user.setSurname(client.getSurname());
-		user.setSecondSurname(client.getSecondSurname());
-		user.setPass(client.getPass());
-		user.setDirection(client.getDirection());
-		user.setDni(client.getDni());
-		user.setTelephone(client.getTelephone());
-		user.setRegistered(client.getRegistered());
-
+		if (user != null) {
+			user.setUserName(client.getUserName());
+			user.setSurname(client.getSurname());
+			user.setSecondSurname(client.getSecondSurname());
+			user.setPass(client.getPass());
+			user.setDirection(client.getDirection());
+			user.setDni(client.getDni());
+			user.setTelephone(client.getTelephone());
+			user.setRegistered(true);
+			System.out.println("el usuario no existe");
+		}
 		session.update(user);
 		transaction.commit();
 
