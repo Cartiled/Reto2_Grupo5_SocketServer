@@ -65,5 +65,4 @@ public class Professor implements java.io.Serializable {
 	public void setReunions(Set<Reunion> reunions) {
 		this.reunions = reunions;
 	}
-
 }

@@ -19,9 +19,9 @@ public enum Events {
 	ON_LOGIN_STUDENT("onLoginStudent"),
 	ON_LOGIN_PROFESSOR("onLoginProfessor"),
 	ON_REGISTER("onRegister"),
-    ON_REGISTER_SUCCESS("onRegisterSuccess"),
-    ON_REGISTER_FAIL("onRegisterFail"),
-	ON_REGISTER_ANSWER("onRegisterAnswer"),
+	ON_REGISTER_ANSWER("onRegisterAwnser"),
+	ON_REGISTER_SUCCESS("onRegisterSuccess"),
+	ON_REGISTER_FAIL("onRegisterFall"),
 	ON_REGISTER_SAME_PASSWORD("onRegisterSamePassword"),
 	ON_GET_EXTERNAL_COURSES_ANSWER("onExternalCourseAnswer"),
     ON_GET_EXTERNAL_COURSES_ERROR("onExternalCourseError"),
@@ -32,7 +32,6 @@ public enum Events {
     ON_GET_REUNIONS_ANSWER("onGetReunionsAnswer"),
     ON_GET_REUNIONS_ERROR("onGetReunionsError"),
     ON_GET_REUNIONS("onGetReunions");
-	
 	
 	
 	public final String value;
