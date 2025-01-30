@@ -22,5 +22,7 @@
         <mapping resource="Reunion.hbm.xml"/>
         <mapping resource="Client.hbm.xml"/>
         <mapping resource="Subject.hbm.xml"/>
+        <mapping resource="Documents.hbm.xml"/>
+        <mapping resource="Externalcourse.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

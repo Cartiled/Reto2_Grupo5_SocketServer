@@ -19,7 +19,7 @@ public enum Events {
 	ON_LOGIN_STUDENT("onLoginStudent"),
 	ON_LOGIN_PROFESSOR("onLoginProfessor"),
 	ON_REGISTER("onRegister"),
-	ON_REGISTER_AWNSER("onRegisterAwnser"),
+	ON_REGISTER_ANSWER("onRegisterAwnser"),
 	ON_REGISTER_SUCCESS("onRegisterSuccess"),
 	ON_REGISTER_FAIL("onRegisterFall"),
 	ON_REGISTER_SAME_PASSWORD("onRegisterSamePassword"),
