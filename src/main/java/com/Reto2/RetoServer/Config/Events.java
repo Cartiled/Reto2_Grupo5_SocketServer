@@ -31,7 +31,19 @@ public enum Events {
     ON_CHANGE_PASSWORD_ANSWER("onChangePasswordAnswer"),
     ON_GET_REUNIONS_ANSWER("onGetReunionsAnswer"),
     ON_GET_REUNIONS_ERROR("onGetReunionsError"),
-    ON_GET_REUNIONS("onGetReunions");
+    ON_GET_REUNIONS("onGetReunions"),
+    ON_CREATE_REUNION("onCreateReunion"),
+    ON_CREATE_REUNION_ANSWER("onCreateReunionAnswer"),
+    ON_CREATE_REUNION_ERROR("onCreateReunionError"),
+    ON_ACCEPT_REUNION("onAcceptReunion"),
+    ON_ACCEPT_REUNION_ANSWER("onAcceptReunionAnswer"),
+    ON_ACCEPT_REUNION_ERROR("onAcceptReunionError"),
+    ON_REJECT_REUNION("onRejectReunion"),
+    ON_REJECT_REUNION_ANSWER("onRejectReunionAnswer"),
+    ON_REJECT_REUNION_ERROR("onRejectReunionError"),
+    ON_FORCE_REUNION("onForceReunion"),
+    ON_FORCE_REUNION_ANSWER("onForceReunionAnswer"),
+    ON_FORCE_REUNION_ERROR("onForceReunionError");
 	
 	
 	public final String value;

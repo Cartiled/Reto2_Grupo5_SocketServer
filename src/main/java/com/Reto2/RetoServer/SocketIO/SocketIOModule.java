@@ -50,6 +50,10 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_GET_EXTERNAL_COURSES.value, String.class, this.getExternalCourses());
 		server.addEventListener(Events.ON_CHANGE_PASSWORD.value, String.class, this.changePassword());
 		server.addEventListener(Events.ON_GET_REUNIONS.value, String.class, this.getReunions());
+		server.addEventListener(Events.ON_ACCEPT_REUNION.value, String.class, this.acceptReunion());
+		server.addEventListener(Events.ON_REJECT_REUNION.value, String.class, this.rejectReunion());
+		server.addEventListener(Events.ON_FORCE_REUNION.value, String.class, this.forceReunion());
+
 	}
 
 	private DataListener<String> login() {
@@ -334,6 +338,66 @@ public class SocketIOModule {
 		});
 	}
 
+	private DataListener<String> forceReunion() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+				if (jsonObject == null || !jsonObject.has("reunionId")) {
+					client.sendEvent(Events.ON_FORCE_REUNION_ERROR.value, "Formato de datos invalido");
+				}
+				int reunionId = jsonObject.get("reunionId").getAsInt();
+				if (forceReunionOnDatabase(reunionId))
+					client.sendEvent(Events.ON_FORCE_REUNION_ANSWER.value, "OK!");
+				else
+					client.sendEvent(Events.ON_FORCE_REUNION_ERROR.value, "No se ha podido cambiar la contraseña");
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FORCE_REUNION_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> rejectReunion() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+				if (jsonObject == null || !jsonObject.has("reunionId")) {
+					client.sendEvent(Events.ON_REJECT_REUNION_ERROR.value, "Formato de datos invalido");
+				}
+				int reunionId = jsonObject.get("reunionId").getAsInt();
+				if (rejectReunionOnDatabase(reunionId))
+					client.sendEvent(Events.ON_REJECT_REUNION_ANSWER.value, "OK!");
+				else
+					client.sendEvent(Events.ON_REJECT_REUNION_ERROR.value, "No se ha podido cambiar la contraseña");
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_REJECT_REUNION_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
+	private DataListener<String> acceptReunion() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+				if (jsonObject == null || !jsonObject.has("reunionId")) {
+					client.sendEvent(Events.ON_ACCEPT_REUNION_ERROR.value, "Formato de datos invalido");
+				}
+				int reunionId = jsonObject.get("reunionId").getAsInt();
+				if (acceptReunionOnDatabase(reunionId))
+					client.sendEvent(Events.ON_ACCEPT_REUNION_ANSWER.value, "OK!");
+				else
+					client.sendEvent(Events.ON_ACCEPT_REUNION_ERROR.value, "No se ha podido cambiar la contraseña");
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_ACCEPT_REUNION_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
 	private DataListener<MessageInput> getAll() {
 		return ((client, data, ackSender) -> {
 			try {
@@ -374,8 +438,7 @@ public class SocketIOModule {
 
 	public void start() {
 		server.start();
-		Course course = getUserCourseByMatriculation(1);
-		System.out.println(course.getTitle());
+
 		System.out.println("Server started...");
 
 	}
@@ -532,6 +595,107 @@ public class SocketIOModule {
 
 			tx = session.beginTransaction();
 			session.update(client);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private boolean acceptReunionOnDatabase(int reunionId) {
+		Transaction tx = null;
+		try {
+			String query = "from Reunion as r where reunionId=:reunionId";
+			Query<Reunion> queryResult = session.createQuery(query, Reunion.class);
+			queryResult.setParameter("reunionId", reunionId);
+			queryResult.setMaxResults(1);
+			Reunion reunion = queryResult.uniqueResult();
+
+			if (reunion == null) {
+				return false;
+			}
+
+			// Solo se puede aceptar la reunion si la reunion no esta en un estado relevante
+			if (reunion.getReunionState() < 10)
+				reunion.setReunionState(reunion.getReunionState() + 1);
+			else if (reunion.getReunionState() == 0)
+				return false;
+			else
+				return false;
+
+			tx = session.beginTransaction();
+			session.update(reunion);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private boolean rejectReunionOnDatabase(int reunionId) {
+		Transaction tx = null;
+		try {
+			String query = "from Reunion as r where reunionId=:reunionId";
+			Query<Reunion> queryResult = session.createQuery(query, Reunion.class);
+			queryResult.setParameter("reunionId", reunionId);
+			queryResult.setMaxResults(1);
+			Reunion reunion = queryResult.uniqueResult();
+
+			if (reunion == null) {
+				return false;
+			}
+
+			// Solo se puede rechazar si la reunion esta en un estado no relevante
+			if (reunion.getReunionState() > 0)
+				reunion.setReunionState(reunion.getReunionState() - 1);
+			// Si la reunion esta forzada, no se puede rechazar mas veces.
+			else if (reunion.getReunionState() == 11)
+				return false;
+			// Si la reunion ya esta rechazada, no se puede rechazar mas veces.
+			else
+				return false;
+
+			tx = session.beginTransaction();
+			session.update(reunion);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private boolean forceReunionOnDatabase(int reunionId) {
+		Transaction tx = null;
+		try {
+			String query = "from Reunion as r where reunionId=:reunionId";
+			Query<Reunion> queryResult = session.createQuery(query, Reunion.class);
+			queryResult.setParameter("reunionId", reunionId);
+			queryResult.setMaxResults(1);
+			Reunion reunion = queryResult.uniqueResult();
+
+			if (reunion == null) {
+				return false;
+			}
+
+			if (reunion.getReunionState() != 0 || reunion.getReunionState() != 10)
+				reunion.setReunionState(11);
+			else
+				return false;
+
+			tx = session.beginTransaction();
+			session.update(reunion);
 			tx.commit();
 			return true;
 		} catch (Exception e) {
