@@ -46,7 +46,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
-		
+
 	}
 
 	private DataListener<String> login() {
@@ -63,56 +63,55 @@ public class SocketIOModule {
 
 				String userName = jsonObject.get("message").getAsString();
 				String userPass = jsonObject.get("userPass").getAsString();
-				
-				System.out.println(userName + ":"+userPass );
+
+				System.out.println(userName + ":" + userPass);
 
 				Client loginClient = sendClient(userName);
 				String name = loginClient.getUserName();
 				String pass = loginClient.getPass();
 				Boolean userType = loginClient.isUserType();
-				
-			
-					if (userName.equals(name) && userPass.equals(pass)) {
-						if (loginClient.getRegistered() == true) {
-							if(userType == true) {
-								System.out.println("usuario registrado");
-								JsonObject responseJson = new JsonObject();
-								Professor professor = getProfessorByUser(userName);
-								responseJson.add("loginClient", gson.toJsonTree(loginClient));
-								responseJson.add("professor", gson.toJsonTree(professor));
-					
-								String answerMessage = gson.toJson(responseJson);
-								MessageOutput messageOutput = new MessageOutput(answerMessage);
 
-								client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
-							}else {
-								System.out.println("usuario registrado");
-								JsonObject responseJson = new JsonObject();
-								Student student = getStudentByUser(userName);
-								Course course = getUserCourseByMatriculation(loginClient.getUserId());
-								responseJson.add("loginClient", gson.toJsonTree(loginClient));
-								responseJson.add("student", gson.toJsonTree(student));
-								responseJson.add("course", gson.toJsonTree(course));
-								String answerMessage = gson.toJson(responseJson);
-								MessageOutput messageOutput = new MessageOutput(answerMessage);
-
-								client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
-							}
-					} else {
-						
-						if(userType == true) {
+				if (userName.equals(name) && userPass.equals(pass)) {
+					if (loginClient.getRegistered() == true) {
+						if (userType == true) {
 							System.out.println("usuario registrado");
 							JsonObject responseJson = new JsonObject();
 							Professor professor = getProfessorByUser(userName);
 							responseJson.add("loginClient", gson.toJsonTree(loginClient));
 							responseJson.add("professor", gson.toJsonTree(professor));
-				
+
+							String answerMessage = gson.toJson(responseJson);
+							MessageOutput messageOutput = new MessageOutput(answerMessage);
+
+							client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
+						} else {
+							System.out.println("usuario registrado");
+							JsonObject responseJson = new JsonObject();
+							Student student = getStudentByUser(userName);
+							Course course = getUserCourseByMatriculation(loginClient.getUserId());
+							responseJson.add("loginClient", gson.toJsonTree(loginClient));
+							responseJson.add("student", gson.toJsonTree(student));
+							responseJson.add("course", gson.toJsonTree(course));
+							String answerMessage = gson.toJson(responseJson);
+							MessageOutput messageOutput = new MessageOutput(answerMessage);
+
+							client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
+						}
+					} else {
+
+						if (userType == true) {
+							System.out.println("usuario registrado");
+							JsonObject responseJson = new JsonObject();
+							Professor professor = getProfessorByUser(userName);
+							responseJson.add("loginClient", gson.toJsonTree(loginClient));
+							responseJson.add("professor", gson.toJsonTree(professor));
+
 							String answerMessage = gson.toJson(responseJson);
 							MessageOutput messageOutput = new MessageOutput(answerMessage);
 
 							client.sendEvent(Events.ON_REGISTER.value, messageOutput);
-							
-						}else {
+
+						} else {
 							System.out.println("usuario no registrado");
 							JsonObject responseJson = new JsonObject();
 							Student student = getStudentByUser(userName);
@@ -169,9 +168,9 @@ public class SocketIOModule {
 				} else {
 					System.out.println("aqui empieza el registro");
 					String userName = jsonObject.get("username").getAsString();
-					String userPass = jsonObject.get("userpass").getAsString();
 					String userSurname = jsonObject.get("surname").getAsString();
 					String userSecondSurname = jsonObject.get("secondsurname").getAsString();
+					String userPass = jsonObject.get("userpass").getAsString();
 					String userDni = jsonObject.get("dni").getAsString();
 					String userDirection = jsonObject.get("direction").getAsString();
 					int userTelephone = jsonObject.get("telephone").getAsInt();
@@ -185,7 +184,7 @@ public class SocketIOModule {
 						client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value,
 								"Escoge una contraseña que sea diferente");
 					} else {
-						Client newUserData = new Client(userName, userPass, userSurname, userSecondSurname, userDni,
+						Client newUserData = new Client(userName, userSurname, userSecondSurname, userPass, userDni,
 								userDirection, userTelephone, true);
 						updateUserData(loginClient.getUserName(), newUserData);
 						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
@@ -345,18 +344,21 @@ public class SocketIOModule {
 		transaction = session.beginTransaction();
 		String hql = "from Client where userName  =:loginUserName";
 		Query<?> q = session.createQuery(hql);
+		q.setParameter("loginUserName", loginUserName);
 		q.setMaxResults(1);
 
 		Client user = (Client) q.getSingleResult();
-		user.setUserName(client.getUserName());
-		user.setSurname(client.getSurname());
-		user.setSecondSurname(client.getSecondSurname());
-		user.setPass(client.getPass());
-		user.setDirection(client.getDirection());
-		user.setDni(client.getDni());
-		user.setTelephone(client.getTelephone());
-		user.setRegistered(client.getRegistered());
-
+		if (user != null) {
+			user.setUserName(client.getUserName());
+			user.setSurname(client.getSurname());
+			user.setSecondSurname(client.getSecondSurname());
+			user.setPass(client.getPass());
+			user.setDirection(client.getDirection());
+			user.setDni(client.getDni());
+			user.setTelephone(client.getTelephone());
+			user.setRegistered(true);
+			System.out.println("el usuario no existe");
+		}
 		session.update(user);
 		transaction.commit();
 
@@ -375,7 +377,7 @@ public class SocketIOModule {
 		return student;
 
 	}
-	
+
 	public Professor getProfessorByUser(String registerName) {
 		String hql = "from Professor where client.userName =:registerName";
 		Query<Professor> query = session.createQuery(hql, Professor.class);
