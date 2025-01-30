@@ -1,4 +1,7 @@
 package com.Reto2.RetoServer.Database.Entity;
+
+import com.google.gson.annotations.Expose;
+
 // Generated 17 ene 2025, 15:37:13 by Hibernate Tools 6.5.1.Final
 
 /**
@@ -11,6 +14,7 @@ public class Assistant implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 128616636880581808L;
 	private Integer assistantId;
+	@Expose
 	private Professor professor;
 	private Reunion reunion;
 
