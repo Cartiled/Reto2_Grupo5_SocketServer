@@ -64,6 +64,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
+<<<<<<< HEAD
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
 		server.addEventListener(Events.ON_GET_EXTERNAL_COURSES.value, String.class, this.getExternalCourses());
 		server.addEventListener(Events.ON_CHANGE_PASSWORD.value, String.class, this.changePassword());
@@ -73,6 +74,8 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FORCE_REUNION.value, String.class, this.forceReunion());
 		server.addEventListener(Events.ON_CREATE_REUNION.value, String.class, this.createReunion());
 		server.addEventListener(Events.ON_FORGOT_PASSWORD.value, String.class, this.newPassword());
+=======
+>>>>>>> 362bddae9abe0b6d11fc20f225abeaf59794cef6
 
 	}
 
@@ -131,7 +134,10 @@ public class SocketIOModule {
 							System.out.println("usuario registrado");
 							JsonObject responseJson = new JsonObject();
 							Professor professor = getProfessorByUser(userName);
+<<<<<<< HEAD
 							professor.setName(name);
+=======
+>>>>>>> 362bddae9abe0b6d11fc20f225abeaf59794cef6
 							responseJson.add("loginClient", gson.toJsonTree(loginClient));
 							responseJson.add("professor", gson.toJsonTree(professor));
 
@@ -197,9 +203,9 @@ public class SocketIOModule {
 					System.out.println("Datos incorrecto");
 				} else {
 					String userName = jsonObject.get("username").getAsString();
-					String userPass = jsonObject.get("userpass").getAsString();
 					String userSurname = jsonObject.get("surname").getAsString();
 					String userSecondSurname = jsonObject.get("secondsurname").getAsString();
+					String userPass = jsonObject.get("userpass").getAsString();
 					String userDni = jsonObject.get("dni").getAsString();
 					String userDirection = jsonObject.get("direction").getAsString();
 					int userTelephone = jsonObject.get("telephone").getAsInt();
@@ -213,7 +219,7 @@ public class SocketIOModule {
 						client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value,
 								"Escoge una contraseña que sea diferente");
 					} else {
-						Client newUserData = new Client(userName, userPass, userSurname, userSecondSurname, userDni,
+						Client newUserData = new Client(userName, userSurname, userSecondSurname, userPass, userDni,
 								userDirection, userTelephone, true);
 						updateUserData(loginClient.getUserName(), newUserData);
 						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
@@ -570,18 +576,21 @@ public class SocketIOModule {
 		transaction = session.beginTransaction();
 		String hql = "from Client where userName  =:loginUserName";
 		Query<Client> q = session.createQuery(hql, Client.class);
+		q.setParameter("loginUserName", loginUserName);
 		q.setMaxResults(1);
 
 		Client user = (Client) q.getSingleResult();
-		user.setUserName(client.getUserName());
-		user.setSurname(client.getSurname());
-		user.setSecondSurname(client.getSecondSurname());
-		user.setPass(client.getPass());
-		user.setDirection(client.getDirection());
-		user.setDni(client.getDni());
-		user.setTelephone(client.getTelephone());
-		user.setRegistered(client.getRegistered());
-
+		if (user != null) {
+			user.setUserName(client.getUserName());
+			user.setSurname(client.getSurname());
+			user.setSecondSurname(client.getSecondSurname());
+			user.setPass(client.getPass());
+			user.setDirection(client.getDirection());
+			user.setDni(client.getDni());
+			user.setTelephone(client.getTelephone());
+			user.setRegistered(true);
+			System.out.println("el usuario no existe");
+		}
 		session.update(user);
 		transaction.commit();
 
