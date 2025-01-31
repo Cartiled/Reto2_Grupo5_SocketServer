@@ -64,7 +64,6 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
-<<<<<<< HEAD
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
 		server.addEventListener(Events.ON_GET_EXTERNAL_COURSES.value, String.class, this.getExternalCourses());
 		server.addEventListener(Events.ON_CHANGE_PASSWORD.value, String.class, this.changePassword());
@@ -74,8 +73,6 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FORCE_REUNION.value, String.class, this.forceReunion());
 		server.addEventListener(Events.ON_CREATE_REUNION.value, String.class, this.createReunion());
 		server.addEventListener(Events.ON_FORGOT_PASSWORD.value, String.class, this.newPassword());
-=======
->>>>>>> 362bddae9abe0b6d11fc20f225abeaf59794cef6
 
 	}
 
@@ -134,10 +131,7 @@ public class SocketIOModule {
 							System.out.println("usuario registrado");
 							JsonObject responseJson = new JsonObject();
 							Professor professor = getProfessorByUser(userName);
-<<<<<<< HEAD
 							professor.setName(name);
-=======
->>>>>>> 362bddae9abe0b6d11fc20f225abeaf59794cef6
 							responseJson.add("loginClient", gson.toJsonTree(loginClient));
 							responseJson.add("professor", gson.toJsonTree(professor));
 
