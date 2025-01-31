@@ -1,7 +1,11 @@
 package com.Reto2.RetoServer.SocketIO;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.lang.reflect.Type;
+import java.sql.Date;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -20,6 +24,7 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import jakarta.persistence.NoResultException;
 
@@ -85,6 +90,7 @@ public class SocketIOModule {
 							System.out.println("usuario registrado");
 							JsonObject responseJson = new JsonObject();
 							Professor professor = getProfessorByUser(userName);
+							professor.setName(name);
 							responseJson.add("loginClient", gson.toJsonTree(loginClient));
 							responseJson.add("professor", gson.toJsonTree(professor));
 
@@ -111,6 +117,7 @@ public class SocketIOModule {
 							System.out.println("usuario registrado");
 							JsonObject responseJson = new JsonObject();
 							Professor professor = getProfessorByUser(userName);
+							professor.setName(name);
 							responseJson.add("loginClient", gson.toJsonTree(loginClient));
 							responseJson.add("professor", gson.toJsonTree(professor));
 
@@ -330,9 +337,12 @@ public class SocketIOModule {
 				int userId = message.get("userId").getAsInt();
 				List<Reunion> reunions = getReunions(userId);
 				List<Professor> professors = getProfessors();
-				String answerMessage = gson.toJson(reunions);
-				System.out.println(answerMessage);
-				client.sendEvent(Events.ON_GET_REUNIONS_ANSWER.value, answerMessage);
+				for (int i = 0; i < professors.size(); i++) {
+					professors.get(i).setName(professors.get(i).getClient().getUserName());
+				}
+				String professorsMessage = gson.toJson(professors);
+				String reunionsMessage = gson.toJson(reunions);
+				client.sendEvent(Events.ON_GET_REUNIONS_ANSWER.value, reunionsMessage, professorsMessage);
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_GET_REUNIONS_ERROR.value, "Error de servidor");
@@ -405,17 +415,50 @@ public class SocketIOModule {
 			try {
 				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+
 				if (jsonObject == null || !jsonObject.has("reunionTheme") || !jsonObject.has("reunionReason")
 						|| !jsonObject.has("reunionDate") || !jsonObject.has("reunionHour")
 						|| !jsonObject.has("reunionClass") || !jsonObject.has("reunionProfessors")
 						|| !jsonObject.has("reunionProfessorId")) {
 					client.sendEvent(Events.ON_CREATE_REUNION_ERROR.value, "Formato de datos invalido");
+					return;
 				}
-				Reunion newReunion = new Reunion();
-				if (createReunionInDatabase(newReunion))
+
+				// Convertir los datos básicos
+				String title = jsonObject.get("reunionTheme").getAsString();
+				String affair = jsonObject.get("reunionReason").getAsString();
+				Date day = Date.valueOf(jsonObject.get("reunionDate").getAsString()); // Convertir String a Date
+				int hour = jsonObject.get("reunionHour").getAsInt();
+				String class_ = jsonObject.get("reunionClass").getAsString();
+				int reunionState = 5; // Estado inicial, lo puedes modificar según lógica
+
+				// Crear el Professor creador de la reunión
+				int professorId = jsonObject.get("reunionProfessorId").getAsInt();
+				Professor professor = new Professor(); // Solo se asigna el ID
+				professor.setUserId(professorId);
+
+				// Convertir la lista de profesores a una lista de Assistant
+				Type professorListType = new TypeToken<List<Professor>>() {
+				}.getType();
+				List<Professor> professorsList = gson.fromJson(jsonObject.get("reunionProfessors"), professorListType);
+
+				Set<Assistant> assistants = new HashSet<>();
+				for (Professor p : professorsList) {
+					Assistant assistant = new Assistant();
+					assistant.setProfessor(professor);
+
+					assistants.add(assistant);
+				}
+
+				// Crear la reunión con todos los datos
+				Reunion newReunion = new Reunion(professor, title, affair, day, class_, reunionState, hour, assistants);
+
+				// Insertar en la base de datos
+				if (createReunionInDatabase(newReunion) && putAssistants(assistants))
 					client.sendEvent(Events.ON_CREATE_REUNION_ANSWER.value, "OK!");
 				else
 					client.sendEvent(Events.ON_CREATE_REUNION_ERROR.value, "No se ha podido crear la reunion");
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_CREATE_REUNION_ERROR.value, "Error de servidor");
@@ -758,6 +801,28 @@ public class SocketIOModule {
 			}
 			tx = session.beginTransaction();
 			session.save(reunion);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private boolean putAssistants(Set<Assistant> assistants) {
+		//Recogemos el id de la ultima reunion creada(La mas reciente)
+		Transaction tx = null;
+		try {
+			if (assistants == null) {
+				return false;
+			}
+			tx = session.beginTransaction();
+			for (Assistant assistant : assistants) {
+				session.save(assistant);
+			}
 			tx.commit();
 			return true;
 		} catch (Exception e) {

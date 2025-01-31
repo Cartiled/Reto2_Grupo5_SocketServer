@@ -11,60 +11,71 @@ import com.google.gson.annotations.Expose;
  */
 public class Professor implements java.io.Serializable {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 29662681295181430L;
-    @Expose
-    private int userId;
-    private Client client;
-    private Set<Assistant> assistants = new HashSet<Assistant>(0);
-    private Set<Reunion> reunions = new HashSet<Reunion>(0);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 29662681295181430L;
+	@Expose
+	private int userId;
 
-    public Professor() {
-    }
+	@Expose
+	private String name;
 
-    public Professor(Client client) {
-        this.client = client;
-    }
+	private Client client;
+	private Set<Assistant> assistants = new HashSet<Assistant>(0);
+	private Set<Reunion> reunions = new HashSet<Reunion>(0);
 
-    public Professor(Client client, Set<Assistant> assistants, Set<Reunion> reunions) {
-        this.client = client;
-        this.assistants = assistants;
-        this.reunions = reunions;
-    }
+	public Professor() {
+	}
 
-    public int getUserId() {
-        return this.userId;
-    }
+	public Professor(Client client) {
+		this.client = client;
+	}
 
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+	public Professor(Client client, Set<Assistant> assistants, Set<Reunion> reunions) {
+		this.client = client;
+		this.assistants = assistants;
+		this.reunions = reunions;
+	}
 
-    public Client getClient() {
-        return this.client;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public Set<Assistant> getAssistants() {
-        return this.assistants;
-    }
+	public int getUserId() {
+		return this.userId;
+	}
 
-    public void setAssistants(Set<Assistant> assistants) {
-        this.assistants = assistants;
-    }
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
 
-    public Set<Reunion> getReunions() {
-        return this.reunions;
-    }
+	public Client getClient() {
+		return this.client;
+	}
 
-    public void setReunions(Set<Reunion> reunions) {
-        this.reunions = reunions;
-    }
+	public void setClient(Client client) {
+		this.client = client;
+	}
 
+	public Set<Assistant> getAssistants() {
+		return this.assistants;
+	}
+
+	public void setAssistants(Set<Assistant> assistants) {
+		this.assistants = assistants;
+	}
+
+	public Set<Reunion> getReunions() {
+		return this.reunions;
+	}
+
+	public void setReunions(Set<Reunion> reunions) {
+		this.reunions = reunions;
+	}
 
 }
