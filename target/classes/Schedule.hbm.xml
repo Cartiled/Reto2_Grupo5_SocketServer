@@ -1,35 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 27 ene 2025, 16:10:05 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 31 ene 2025, 20:13:23 by Hibernate Tools 6.5.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class catalog="reto2grupo5" name="com.Reto2.RetoServer.Database.Entity.Schedule" optimistic-lock="none" table="schedule">
         <id name="scheduleId" type="java.lang.Integer">
             <column name="ScheduleID"/>
             <generator class="identity"/>
         </id>
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Subject" fetch="select" name="subject">
+            <column name="subjectId"/>
+        </many-to-one>
         <many-to-one class="com.Reto2.RetoServer.Database.Entity.Client" fetch="select" name="client">
             <column name="UserId"/>
         </many-to-one>
         <property name="scheduleDay" type="int">
             <column name="ScheduleDay" not-null="true"/>
         </property>
-        <property name="subjectId" type="int">
-            <column name="subjectId" not-null="true"/>
-            
-        </property>
-        <property name="scheduleHour" type="string">
-            <column length="45" name="ScheduleHour" not-null="true"/>
+        <property name="scheduleHour" type="java.lang.Integer">
+            <column name="ScheduleHour"/>
         </property>
         <set fetch="select" inverse="true" lazy="true" name="courses" table="course">
             <key>
                 <column name="ScheduleID" not-null="true"/>
             </key>
             <one-to-many class="com.Reto2.RetoServer.Database.Entity.Course"/>
-        </set>
-        <set fetch="select" inverse="true" lazy="true" name="subjects" table="subject">
-            <key>
-                <column name="subjectID"/>
-            </key>
-            <one-to-many class="com.Reto2.RetoServer.Database.Entity.Subject"/>
         </set>
     </class>
 </hibernate-mapping>

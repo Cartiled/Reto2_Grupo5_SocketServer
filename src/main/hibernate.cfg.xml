@@ -10,16 +10,16 @@
         <property name="hibernate.hbm2ddl.auto">none</property>
         <property name="hibernate.search.autoregister_listeners">true</property>
         <property name="hibernate.validator.apply_to_ddl">false</property>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Matriculation.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Client.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Course.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Professor.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Subject.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Reunion.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Schedule.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Documents.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Assistant.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Externalcourse.hbm.xml"/>
-        <mapping resource="com/Reto2/RetoServer/Database/Entity/Student.hbm.xml"/>
+        <mapping resource="test/Client.hbm.xml"/>
+        <mapping resource="test/Course.hbm.xml"/>
+        <mapping resource="test/Professor.hbm.xml"/>
+        <mapping resource="test/Subject.hbm.xml"/>
+        <mapping resource="test/Externalcourse.hbm.xml"/>
+        <mapping resource="test/Schedule.hbm.xml"/>
+        <mapping resource="test/Matriculation.hbm.xml"/>
+        <mapping resource="test/Student.hbm.xml"/>
+        <mapping resource="test/Documents.hbm.xml"/>
+        <mapping resource="test/Reunion.hbm.xml"/>
+        <mapping resource="test/Assistant.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

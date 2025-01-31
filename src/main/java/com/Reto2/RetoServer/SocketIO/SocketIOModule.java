@@ -1,22 +1,16 @@
 package com.Reto2.RetoServer.SocketIO;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.crypto.Cipher;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-
 import com.Reto2.RetoServer.Config.Events;
 import com.Reto2.RetoServer.Model.MessageInput;
 import com.Reto2.RetoServer.Model.MessageOutput;
-
 import com.Reto2.RetoServer.Database.Entity.*;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
@@ -344,15 +338,18 @@ public class SocketIOModule {
 			try {
 				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+
 				if (message == null || !message.has("userId")) {
 					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
 					System.out.println("Datos incorrectos");
 				} else {
 					int userId = message.get("userId").getAsInt();
-					List<Subject> subject = getSchedulesSubjects(userId);
-					String jsonDocuments = gson.toJson(subject);
-					System.out.println(jsonDocuments);
-					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
+//					List<Schedule> schedule = new ArrayList<Schedule>();
+
+//					String jsonDocuments = gson.toJson(schedule);
+					System.out.println(getSchedulesSubjects(userId));
+
+					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, getSchedulesSubjects(userId));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -379,7 +376,7 @@ public class SocketIOModule {
 					String jsonDocuments = gson.toJson(links);
 					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
 				}
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
@@ -504,20 +501,24 @@ public class SocketIOModule {
 
 	}
 
-	public List<Subject> getSchedulesSubjects(int userId) {
-		List<Subject> subject = new ArrayList<Subject>();
-		String hql = "from Schedule s where s.client = :userId";
-		Query<Subject> query = session.createQuery(hql, Subject.class);
+	public String getSchedulesSubjects(int userId) {
+		String hql = "FROM Schedule WHERE client.id = :userId";
+		Query<Schedule> query = session.createQuery(hql, Schedule.class);
 		query.setParameter("userId", userId);
-
+		System.out.println("Buscando horarios para el usuario ID: " + userId);
 		try {
-			subject = query.getResultList();
-		} catch (NoResultException e) {
-			System.out.println("No client found with the ID: " + userId);
-		}
-		return subject;
+			List<Schedule> schedules = query.getResultList();
+			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
+			return gson.toJson(schedules);
+		} catch (NoResultException e) {
+			System.out.println("No se encontraron horarios para el cliente ID: " + userId);
+		} catch (Exception e) {
+			System.out.println("Error al recuperar los horarios: " + e.getMessage());
+		}
+		return null;
 	}
+
 	public List<Client> getAllClient() {
 		List<Client> clients = new ArrayList<Client>();
 		String hql = "Select * from Client";
