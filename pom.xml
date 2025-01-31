@@ -84,13 +84,19 @@
 			<version>1.2.14</version>
 		</dependency>
 		<dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-1.2-api</artifactId>
-    <version>2.17.2</version>
-</dependency>
-		
-			<dependency>
-				<groupId>org.hibernate.orm</groupId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-1.2-api</artifactId>
+			<version>2.17.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>6.6.3.Final</version>
 			<exclusions>
@@ -126,10 +132,10 @@
 			<version>3.25.0-GA</version>
 		</dependency>
 		<!-- Jackson -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.12.5</version>
-        </dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.12.5</version>
+		</dependency>
 	</dependencies>
 </project>

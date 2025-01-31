@@ -3,7 +3,20 @@ package com.Reto2.RetoServer.SocketIO;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import java.lang.reflect.Type;
 import java.sql.Date;
 
@@ -59,6 +72,7 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_REJECT_REUNION.value, String.class, this.rejectReunion());
 		server.addEventListener(Events.ON_FORCE_REUNION.value, String.class, this.forceReunion());
 		server.addEventListener(Events.ON_CREATE_REUNION.value, String.class, this.createReunion());
+		server.addEventListener(Events.ON_FORGOT_PASSWORD.value, String.class, this.newPassword());
 
 	}
 
@@ -139,6 +153,7 @@ public class SocketIOModule {
 							client.sendEvent(Events.ON_REGISTER.value, messageOutput);
 						}
 					}
+
 				} else {
 					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
 					System.out.println("El usuario no ha podido loguearse: " + userName);
@@ -424,20 +439,17 @@ public class SocketIOModule {
 					return;
 				}
 
-				// Convertir los datos básicos
 				String title = jsonObject.get("reunionTheme").getAsString();
 				String affair = jsonObject.get("reunionReason").getAsString();
-				Date day = Date.valueOf(jsonObject.get("reunionDate").getAsString()); // Convertir String a Date
+				Date day = Date.valueOf(jsonObject.get("reunionDate").getAsString());
 				int hour = jsonObject.get("reunionHour").getAsInt();
 				String class_ = jsonObject.get("reunionClass").getAsString();
-				int reunionState = 5; // Estado inicial, lo puedes modificar según lógica
+				int reunionState = 5;
 
-				// Crear el Professor creador de la reunión
 				int professorId = jsonObject.get("reunionProfessorId").getAsInt();
-				Professor professor = new Professor(); // Solo se asigna el ID
+				Professor professor = new Professor();
 				professor.setUserId(professorId);
 
-				// Convertir la lista de profesores a una lista de Assistant
 				Type professorListType = new TypeToken<List<Professor>>() {
 				}.getType();
 				List<Professor> professorsList = gson.fromJson(jsonObject.get("reunionProfessors"), professorListType);
@@ -445,16 +457,13 @@ public class SocketIOModule {
 				Set<Assistant> assistants = new HashSet<>();
 				for (Professor p : professorsList) {
 					Assistant assistant = new Assistant();
-					assistant.setProfessor(professor);
-
+					assistant.setProfessor(p);
 					assistants.add(assistant);
 				}
 
-				// Crear la reunión con todos los datos
 				Reunion newReunion = new Reunion(professor, title, affair, day, class_, reunionState, hour, assistants);
 
-				// Insertar en la base de datos
-				if (createReunionInDatabase(newReunion) && putAssistants(assistants))
+				if (createReunionInDatabase(newReunion) && putAssistants(assistants, newReunion.getReunionId()))
 					client.sendEvent(Events.ON_CREATE_REUNION_ANSWER.value, "OK!");
 				else
 					client.sendEvent(Events.ON_CREATE_REUNION_ERROR.value, "No se ha podido crear la reunion");
@@ -486,6 +495,34 @@ public class SocketIOModule {
 				e.printStackTrace();
 			}
 		});
+	}
+
+	private DataListener<String> newPassword() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
+
+				if (jsonObject == null || !jsonObject.has("message")) {
+					client.sendEvent(Events.ON_FORGOT_PASSWORD_ERROR.value, "Formato de datos invalido");
+					return;
+				}
+
+				String userName = jsonObject.get("message").getAsString();
+
+				Client user = sendClient(userName);
+
+				if (sendEmail() && updateClient(user))
+					client.sendEvent(Events.ON_FORGOT_PASSWORD_ANSWER.value, "OK!");
+				else
+					client.sendEvent(Events.ON_FORGOT_PASSWORD_ERROR.value, "No se ha podido crear la reunion");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FORGOT_PASSWORD_ERROR.value, "Error de servidor");
+			}
+		});
+
 	}
 
 	private ConnectListener onConnect() {
@@ -532,7 +569,7 @@ public class SocketIOModule {
 	public void updateUserData(String loginUserName, Client client) {
 		transaction = session.beginTransaction();
 		String hql = "from Client where userName  =:loginUserName";
-		Query<?> q = session.createQuery(hql);
+		Query<Client> q = session.createQuery(hql, Client.class);
 		q.setMaxResults(1);
 
 		Client user = (Client) q.getSingleResult();
@@ -812,15 +849,19 @@ public class SocketIOModule {
 		}
 	}
 
-	private boolean putAssistants(Set<Assistant> assistants) {
-		//Recogemos el id de la ultima reunion creada(La mas reciente)
+	private boolean putAssistants(Set<Assistant> assistants, int reunionId) {
+		// Recogemos el id de la ultima reunion creada(La mas reciente)
 		Transaction tx = null;
 		try {
 			if (assistants == null) {
 				return false;
 			}
+			Reunion reunion = new Reunion();
+			reunion.setReunionId(reunionId);
+
 			tx = session.beginTransaction();
 			for (Assistant assistant : assistants) {
+				assistant.setReunion(reunion);
 				session.save(assistant);
 			}
 			tx.commit();
@@ -833,4 +874,39 @@ public class SocketIOModule {
 			return false;
 		}
 	}
+
+	private boolean sendEmail() {
+		String user = "elorclass2@gmail.com";
+		String pass = "zfry gdak cgwo qmwl";
+		String to = "liher.chamorropa@elorrieta-errekamari.com";
+		String subject = "Contraseña olvidada";
+		String message = "Se ha enviado este correo porque has olvidado tu contraseña, esta es tu nueva contraseña: nuevacontraseña.";
+
+		System.out.println("Preparing to send email...");
+		return false;
+	}
+
+	private boolean updateClient(Client user) {
+		// Recogemos el id de la ultima reunion creada(La mas reciente)
+		Transaction tx = null;
+		try {
+			if (user == null) {
+				return false;
+			}
+
+			user.setPass("nuevaContraseña");
+
+			tx = session.beginTransaction();
+			session.save(user);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 }

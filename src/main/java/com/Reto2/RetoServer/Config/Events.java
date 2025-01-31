@@ -43,7 +43,10 @@ public enum Events {
     ON_REJECT_REUNION_ERROR("onRejectReunionError"),
     ON_FORCE_REUNION("onForceReunion"),
     ON_FORCE_REUNION_ANSWER("onForceReunionAnswer"),
-    ON_FORCE_REUNION_ERROR("onForceReunionError");
+    ON_FORCE_REUNION_ERROR("onForceReunionError"),
+    ON_FORGOT_PASSWORD("onForgotPassword"),
+    ON_FORGOT_PASSWORD_ANSWER("onForgotPasswordAnswer"),
+    ON_FORGOT_PASSWORD_ERROR("onForgotPasswordError");
 	
 	
 	public final String value;
