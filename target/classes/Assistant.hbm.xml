@@ -6,7 +6,7 @@
             <column name="AssistantID"/>
             <generator class="identity"/>
         </id>
-        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Professor" fetch="select" name="professor">
+        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Professor" fetch="join" name="professor">
             <column name="UserId"/>
         </many-to-one>
         <many-to-one class="com.Reto2.RetoServer.Database.Entity.Reunion" fetch="select" name="reunion">

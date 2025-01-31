@@ -15,6 +15,7 @@ public class Reunion implements java.io.Serializable {
 	private static final long serialVersionUID = -302842241366381047L;
 	@Expose
 	private Integer reunionId;
+	@Expose
 	private Professor professor;
 	@Expose
 	private String title;

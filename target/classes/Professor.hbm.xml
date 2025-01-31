@@ -5,7 +5,7 @@
         <id name="userId" type="int">
             <column name="UserId"/>
             <generator class="foreign">
-            	<param name="property">client</param>
+                <param name="property">client</param>
             </generator>
         </id>
         <one-to-one class="com.Reto2.RetoServer.Database.Entity.Client" constrained="true" name="client"/>

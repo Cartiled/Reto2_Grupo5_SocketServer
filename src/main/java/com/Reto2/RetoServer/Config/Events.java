@@ -23,9 +23,30 @@ public enum Events {
 	ON_REGISTER_SUCCESS("onRegisterSuccess"),
 	ON_REGISTER_FAIL("onRegisterFall"),
 	ON_REGISTER_SAME_PASSWORD("onRegisterSamePassword"),
-	ON_EXTERNAL_COURSE_ANSWER("onExternalCourseAnswer"),
-	ON_EXTERNAL_COURSE_ERROR("onExternalCourseError"),
-	ON_EXTERNAL_COURSE("onExternalCourse");
+	ON_GET_EXTERNAL_COURSES_ANSWER("onExternalCourseAnswer"),
+    ON_GET_EXTERNAL_COURSES_ERROR("onExternalCourseError"),
+    ON_GET_EXTERNAL_COURSES("onExternalCourse"),
+    ON_CHANGE_PASSWORD("onChangePassword"),
+    ON_CHANGE_PASSWORD_FAIL("onChangePasswordFail"),
+    ON_CHANGE_PASSWORD_ANSWER("onChangePasswordAnswer"),
+    ON_GET_REUNIONS_ANSWER("onGetReunionsAnswer"),
+    ON_GET_REUNIONS_ERROR("onGetReunionsError"),
+    ON_GET_REUNIONS("onGetReunions"),
+    ON_CREATE_REUNION("onCreateReunion"),
+    ON_CREATE_REUNION_ANSWER("onCreateReunionAnswer"),
+    ON_CREATE_REUNION_ERROR("onCreateReunionError"),
+    ON_ACCEPT_REUNION("onAcceptReunion"),
+    ON_ACCEPT_REUNION_ANSWER("onAcceptReunionAnswer"),
+    ON_ACCEPT_REUNION_ERROR("onAcceptReunionError"),
+    ON_REJECT_REUNION("onRejectReunion"),
+    ON_REJECT_REUNION_ANSWER("onRejectReunionAnswer"),
+    ON_REJECT_REUNION_ERROR("onRejectReunionError"),
+    ON_FORCE_REUNION("onForceReunion"),
+    ON_FORCE_REUNION_ANSWER("onForceReunionAnswer"),
+    ON_FORCE_REUNION_ERROR("onForceReunionError"),
+    ON_FORGOT_PASSWORD("onForgotPassword"),
+    ON_FORGOT_PASSWORD_ANSWER("onForgotPasswordAnswer"),
+    ON_FORGOT_PASSWORD_ERROR("onForgotPasswordError");
 	
 	
 	public final String value;

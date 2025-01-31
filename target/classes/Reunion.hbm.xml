@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Generated 29 ene 2025 15:24:50 by Hibernate Tools 6.2.5.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class catalog="reto2grupo5"
-        name="com.Reto2.RetoServer.Database.Entity.Reunion"
-        optimistic-lock="none" table="reunion">
-        <id name="reunionId" type="java.lang.Integer">
-            <column name="ReunionID" />
-            <generator class="identity" />
-        </id>
-        <many-to-one
-            class="com.Reto2.RetoServer.Database.Entity.Professor" fetch="select"
-            name="professor">
-            <column name="UserId" />
-        </many-to-one>
-        <property name="title" type="string">
-            <column length="40" name="Title" not-null="true" />
-        </property>
-        <property name="affair" type="string">
-            <column length="100" name="Affair" not-null="true" />
-        </property>
-        <property name="day" type="date">
-            <column length="10" name="Day" not-null="true" />
-        </property>
-        <property name="class_" type="string">
-            <column length="40" name="Class" not-null="true" />
-        </property>
-        <property name="reunionState" type="int">
-            <column name="ReunionState" not-null="true" />
-        </property>
-        <property name="hour" type="int">
-            <column name="Hour" not-null="true" />
-        </property>
-        <set fetch="select" inverse="true" lazy="true" name="assistants"
-            table="assistant">
-            <key>
-                <column name="ReunionID" />
-            </key>
-            <one-to-many
-                class="com.Reto2.RetoServer.Database.Entity.Assistant" />
-        </set>
-    </class>
+	<class catalog="reto2grupo5"
+		name="com.Reto2.RetoServer.Database.Entity.Reunion"
+		optimistic-lock="none" table="reunion">
+		<id name="reunionId" type="java.lang.Integer">
+			<column name="ReunionID" />
+			<generator class="identity" />
+		</id>
+		<many-to-one
+			class="com.Reto2.RetoServer.Database.Entity.Professor" fetch="select"
+			name="professor">
+			<column name="UserId" />
+		</many-to-one>
+		<property name="title" type="string">
+			<column length="40" name="Title" not-null="true" />
+		</property>
+		<property name="affair" type="string">
+			<column length="100" name="Affair" not-null="true" />
+		</property>
+		<property name="day" type="date">
+			<column length="10" name="Day" not-null="true" />
+		</property>
+		<property name="class_" type="string">
+			<column length="40" name="Class" not-null="true" />
+		</property>
+		<property name="reunionState" type="int">
+			<column name="ReunionState" not-null="true" />
+		</property>
+		<property name="hour" type="int">
+			<column name="Hour" not-null="true" />
+		</property>
+		<set fetch="select" inverse="true" lazy="true" name="assistants"
+			table="assistant">
+			<key>
+				<column name="ReunionID" />
+			</key>
+			<one-to-many
+				class="com.Reto2.RetoServer.Database.Entity.Assistant" />
+		</set>
+	</class>
 </hibernate-mapping>
