@@ -67,5 +67,5 @@ public class Subject implements java.io.Serializable {
 	public void setDocumentses(Set documentses) {
 		this.documentses = documentses;
 	}
-
+	
 }

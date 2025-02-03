@@ -321,7 +321,8 @@ public class SocketIOModule {
 					System.out.println("Datos incorrectos");
 				} else {
 					int userId = message.get("userId").getAsInt();
-					List<Schedule> schedule = new ArrayList<Schedule>();
+
+					List<Schedule> schedule = getSchedulesSubjects(userId);
 
 					String jsonDocuments = gson.toJson(schedule);
 					System.out.println(jsonDocuments);
@@ -698,7 +699,7 @@ public class SocketIOModule {
 		return professor;
 
 	}
-	
+
 	public Course getUserCourseByMatriculation(int id) {
 		String hql = "select c from Course c join c.matriculations m join m.student s where s.userId =:id";
 		Query<Course> query = session.createQuery(hql, Course.class);
@@ -713,22 +714,20 @@ public class SocketIOModule {
 
 	}
 
-	public String getSchedulesSubjects(int userId) {
+	public List<Schedule> getSchedulesSubjects(int userId) {
 		String hql = "FROM Schedule WHERE client.id = :userId";
 		Query<Schedule> query = session.createQuery(hql, Schedule.class);
 		query.setParameter("userId", userId);
+		List<Schedule> schedules = null;
 		System.out.println("Buscando horarios para el usuario ID: " + userId);
 		try {
-			List<Schedule> schedules = query.getResultList();
-			Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-			return gson.toJson(schedules);
+			schedules = query.getResultList();
 		} catch (NoResultException e) {
 			System.out.println("No se encontraron horarios para el cliente ID: " + userId);
 		} catch (Exception e) {
 			System.out.println("Error al recuperar los horarios: " + e.getMessage());
 		}
-		return null;
+		return schedules;
 	}
 
 	public List<Client> getAllClient() {
@@ -755,6 +754,14 @@ public class SocketIOModule {
 		query.setParameter("subjectId", subjectId);
 		List<Documents> documents = query.list();
 		return documents;
+	}
+
+	public List<Schedule> getAllSchedules() {
+		String hql = "from Schedules";
+		List<Schedule> schedules = null;
+		Query<Schedule> query = session.createQuery(hql, Schedule.class);
+		schedules = query.getResultList();
+		return schedules;
 	}
 
 	public List<Documents> getDocumentsByCourse(int userId) {

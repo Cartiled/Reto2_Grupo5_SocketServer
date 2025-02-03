@@ -89,4 +89,5 @@ public class Schedule implements java.io.Serializable {
 		this.courses = courses;
 	}
 
+	
 }
