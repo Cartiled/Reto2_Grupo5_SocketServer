@@ -30,7 +30,7 @@
         <property name="userType" type="boolean">
             <column name="UserType" not-null="true"/>
         </property>
-        <property name="registered" type="java.lang.Boolean">
+        <property name="registered" type="boolean">
             <column name="Registered"/>
         </property>
         <one-to-one class="com.Reto2.RetoServer.Database.Entity.Student" name="student"/>

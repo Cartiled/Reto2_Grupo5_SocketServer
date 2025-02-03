@@ -24,8 +24,8 @@
         <property name="schedule" type="int">
             <column name="schedule" not-null="true"/>
         </property>
-        <property name="lattitude" type="float">
-            <column name="lattitude" not-null="true" precision="12"/>
+        <property name="latitude" type="float">
+            <column name="latitude" not-null="true" precision="12"/>
         </property>
         <property name="longitude" type="float">
             <column name="longitude" not-null="true" precision="12"/>
