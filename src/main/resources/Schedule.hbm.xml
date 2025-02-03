@@ -6,9 +6,9 @@
             <column name="ScheduleID"/>
             <generator class="identity"/>
         </id>
-        <many-to-one class="com.Reto2.RetoServer.Database.Entity.Subject" fetch="select" name="subject">
-            <column name="subjectId"/>
-        </many-to-one>
+       <many-to-one class="com.Reto2.RetoServer.Database.Entity.Subject" fetch="join" name="subject">
+    		<column name="subjectId"/>
+		</many-to-one>
         <many-to-one class="com.Reto2.RetoServer.Database.Entity.Client" fetch="select" name="client">
             <column name="UserId"/>
         </many-to-one>

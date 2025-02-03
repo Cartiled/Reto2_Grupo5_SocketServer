@@ -107,7 +107,7 @@ public class SocketIOModule {
 				String pass = loginClient.getPass();
 				Boolean userType = loginClient.isUserType();
 
-				if (userName.equals(name) && userPass.equals(pass)) {
+				if (userName.equalsIgnoreCase(name) && userPass.equals(pass)) {
 					if (loginClient.getRegistered() == true) {
 						if (userType == true) {
 							System.out.println("usuario registrado");
@@ -322,9 +322,13 @@ public class SocketIOModule {
 				} else {
 					int userId = message.get("userId").getAsInt();
 
-					List<Schedule> schedule = getSchedulesSubjects(userId);
+					List<Schedule> schedules = getSchedulesSubjects(userId);
 
-					String jsonDocuments = gson.toJson(schedule);
+					for (Schedule schedule : schedules) {
+						schedule.getSubject();
+					}
+
+					String jsonDocuments = gson.toJson(schedules);
 					System.out.println(jsonDocuments);
 
 					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, getSchedulesSubjects(userId));
@@ -715,11 +719,10 @@ public class SocketIOModule {
 	}
 
 	public List<Schedule> getSchedulesSubjects(int userId) {
-		String hql = "FROM Schedule WHERE client.id = :userId";
+		String hql = "FROM Schedule s JOIN FETCH s.subject WHERE s.client.id = :userId";
 		Query<Schedule> query = session.createQuery(hql, Schedule.class);
 		query.setParameter("userId", userId);
 		List<Schedule> schedules = null;
-		System.out.println("Buscando horarios para el usuario ID: " + userId);
 		try {
 			schedules = query.getResultList();
 		} catch (NoResultException e) {

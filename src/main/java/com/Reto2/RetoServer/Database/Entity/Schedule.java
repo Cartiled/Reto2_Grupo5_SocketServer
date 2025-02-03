@@ -88,6 +88,5 @@ public class Schedule implements java.io.Serializable {
 	public void setCourses(Set courses) {
 		this.courses = courses;
 	}
-
 	
 }
