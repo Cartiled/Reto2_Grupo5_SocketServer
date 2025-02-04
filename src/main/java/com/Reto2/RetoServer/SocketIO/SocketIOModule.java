@@ -326,12 +326,13 @@ public class SocketIOModule {
 
 					for (Schedule schedule : schedules) {
 						schedule.getSubject();
+						
 					}
 
 					String jsonDocuments = gson.toJson(schedules);
 					System.out.println(jsonDocuments);
 
-					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, getSchedulesSubjects(userId));
+					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -719,19 +720,27 @@ public class SocketIOModule {
 	}
 
 	public List<Schedule> getSchedulesSubjects(int userId) {
-		String hql = "FROM Schedule s JOIN FETCH s.subject WHERE s.client.id = :userId";
-		Query<Schedule> query = session.createQuery(hql, Schedule.class);
-		query.setParameter("userId", userId);
-		List<Schedule> schedules = null;
-		try {
-			schedules = query.getResultList();
-		} catch (NoResultException e) {
-			System.out.println("No se encontraron horarios para el cliente ID: " + userId);
-		} catch (Exception e) {
-			System.out.println("Error al recuperar los horarios: " + e.getMessage());
-		}
-		return schedules;
+	    List<Schedule> schedules = new ArrayList<>();
+	    
+	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+	        Transaction tx = session.beginTransaction();
+	        
+	        String hql = "FROM Schedule s JOIN FETCH s.subject WHERE s.client.id = :userId";
+	        Query<Schedule> query = session.createQuery(hql, Schedule.class);
+	        query.setParameter("userId", userId);
+
+	        schedules = query.getResultList();
+	        
+	        tx.commit();
+	    } catch (NoResultException e) {
+	        System.out.println("No se encontraron horarios para el cliente ID: " + userId);
+	    } catch (Exception e) {
+	        System.out.println("Error al recuperar los horarios: " + e.getMessage());
+	    }
+
+	    return schedules;
 	}
+
 
 	public List<Client> getAllClient() {
 		List<Client> clients = new ArrayList<Client>();
