@@ -2,15 +2,25 @@
 <!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.org/dtd/hibernate-reverse-engineering-3.0.dtd" >
 
 <hibernate-reverse-engineering>
-  <table-filter match-catalog="reto2grupo5" match-name="assistant"/>
-  <table-filter match-catalog="reto2grupo5" match-name="client"/>
-  <table-filter match-catalog="reto2grupo5" match-name="course"/>
-  <table-filter match-catalog="reto2grupo5" match-name="documents"/>
-  <table-filter match-catalog="reto2grupo5" match-name="externalcourse"/>
-  <table-filter match-catalog="reto2grupo5" match-name="matriculation"/>
-  <table-filter match-catalog="reto2grupo5" match-name="professor"/>
-  <table-filter match-catalog="reto2grupo5" match-name="reunion"/>
-  <table-filter match-catalog="reto2grupo5" match-name="schedule"/>
-  <table-filter match-catalog="reto2grupo5" match-name="student"/>
-  <table-filter match-catalog="reto2grupo5" match-name="subject"/>
+	<table-filter match-catalog="reto2grupo5" match-name="assistant" />
+	<table-filter match-catalog="reto2grupo5" match-name="client" />
+	<table-filter match-catalog="reto2grupo5" match-name="course" />
+	<table-filter match-catalog="reto2grupo5" match-name="documents" />
+	<table-filter match-catalog="reto2grupo5"
+		match-name="externalcourse" />
+	<table-filter match-catalog="reto2grupo5"
+		match-name="matriculation" />
+	<table-filter match-catalog="reto2grupo5" match-name="professor" />
+	<table-filter match-catalog="reto2grupo5" match-name="reunion" />
+	<table-filter match-catalog="reto2grupo5" match-name="schedule" />
+	<table-filter match-catalog="reto2grupo5" match-name="student" />
+	<table-filter match-catalog="reto2grupo5" match-name="subject" />
+	<table catalog="" schema="" name="TABLE_0"></table>
+	<table catalog="reto2grupo5" name="schedule">
+		<column name="ScheduleID"></column>
+		<column name="UserId"></column>
+		<column name="ScheduleDay"></column>
+		<column name="ScheduleHour"></column>
+		<column name="subjectId"></column>
+	</table>
 </hibernate-reverse-engineering>

@@ -178,5 +178,5 @@ public class Client implements java.io.Serializable {
 	public void setSchedules(Set<Schedule> schedules) {
 		this.schedules = schedules;
 	}
-
+	
 }
