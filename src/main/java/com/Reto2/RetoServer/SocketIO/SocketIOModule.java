@@ -3,19 +3,9 @@ package com.Reto2.RetoServer.SocketIO;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import java.lang.reflect.Type;
 import java.sql.Date;
@@ -525,7 +515,7 @@ public class SocketIOModule {
 		});
 
 	}
-
+	
 	private ConnectListener onConnect() {
 		return (client -> {
 			client.joinRoom("default-room");
@@ -921,5 +911,22 @@ public class SocketIOModule {
 			return false;
 		}
 	}
+	
+	public String getSchedulesSubjects(int userId) {
+        String hql = "FROM Schedule WHERE client.id = :userId";
+        Query<Schedule> query = session.createQuery(hql, Schedule.class);
+        query.setParameter("userId", userId);
+        System.out.println("Buscando horarios para el usuario ID: " + userId);
+        try {
+            List<Schedule> schedules = query.getResultList();
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
+            return gson.toJson(schedules);
+        } catch (NoResultException e) {
+            System.out.println("No se encontraron horarios para el cliente ID: " + userId);
+        } catch (Exception e) {
+            System.out.println("Error al recuperar los horarios: " + e.getMessage());
+        }
+        return null;
+    }
 }
