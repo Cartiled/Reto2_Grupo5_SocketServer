@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.password">Elorrieta00</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost/reto2grupo5</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.hbm2ddl.auto">none</property>
+        <property name="hibernate.search.autoregister_listeners">true</property>
+        <property name="hibernate.validator.apply_to_ddl">false</property>
+        <mapping resource="test/Client.hbm.xml"/>
+        <mapping resource="test/Course.hbm.xml"/>
+        <mapping resource="test/Professor.hbm.xml"/>
+        <mapping resource="test/Subject.hbm.xml"/>
+        <mapping resource="test/Externalcourse.hbm.xml"/>
+        <mapping resource="test/Schedule.hbm.xml"/>
+        <mapping resource="test/Matriculation.hbm.xml"/>
+        <mapping resource="test/Student.hbm.xml"/>
+        <mapping resource="test/Documents.hbm.xml"/>
+        <mapping resource="test/Reunion.hbm.xml"/>
+        <mapping resource="test/Assistant.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>
