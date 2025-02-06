@@ -293,7 +293,6 @@ public class SocketIOModule {
 						links.add(document.getLink());
 					}
 					String jsonDocuments = gson.toJson(links);
-					System.out.println(jsonDocuments);
 					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
 				}
 			} catch (Exception e) {
@@ -321,9 +320,7 @@ public class SocketIOModule {
 						schedule.getSubject();
 						
 					}
-
 					String jsonDocuments = gson.toJson(schedules);
-					System.out.println(jsonDocuments);
 
 					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
 				}
