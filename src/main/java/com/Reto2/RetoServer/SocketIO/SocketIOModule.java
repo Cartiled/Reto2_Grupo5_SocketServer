@@ -5,19 +5,11 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import javax.crypto.Cipher;
-import java.util.Properties;
 import java.util.Set;
-import javax.mail.Authenticator;
-import javax.mail.Message;
+
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+
+import javax.crypto.Cipher;
 import java.lang.reflect.Type;
 import java.sql.Date;
 import org.hibernate.Session;
@@ -36,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.Reto2.RetoServer.mail.EmailSender;
 
 import jakarta.persistence.NoResultException;
 
@@ -611,7 +604,7 @@ public class SocketIOModule {
 		});
 
 	}
-
+	
 	private ConnectListener onConnect() {
 		return (client -> {
 			client.joinRoom("default-room");
@@ -997,13 +990,22 @@ public class SocketIOModule {
 	}
 
 	private boolean sendEmail() {
+		System.out.println("Preparing to send email...");
 		String user = "elorclass2@gmail.com";
 		String pass = "zfry gdak cgwo qmwl";
-		String to = "liher.chamorropa@elorrieta-errekamari.com";
+		String to = "yifei.ye@elorrieta-errekamari.com";
 		String subject = "Contraseña olvidada";
 		String message = "Se ha enviado este correo porque has olvidado tu contraseña, esta es tu nueva contraseña: nuevacontraseña.";
 
-		System.out.println("Preparing to send email...");
+		EmailSender emailService = new EmailSender(user, pass, "smtp.gmail.com", 465);
+
+		try {
+			emailService.sendMail(to, subject, message);
+			return true;
+		} catch (MessagingException e) {
+			System.out.println("Doh! " + e.getMessage());
+		}
+
 		return false;
 	}
 
@@ -1029,5 +1031,4 @@ public class SocketIOModule {
 			return false;
 		}
 	}
-
 }
