@@ -177,7 +177,6 @@ public class Client implements java.io.Serializable {
 	public void setSchedules(Set<Schedule> schedules) {
 		this.schedules = schedules;
 	}
-
 	@Override
 	public String toString() {
 		return "Client [userId=" + userId + ", userName=" + userName + ", surname=" + surname + ", secondSurname="
@@ -185,5 +184,6 @@ public class Client implements java.io.Serializable {
 				+ telephone + ", userType=" + userType + ", registered=" + registered + ", student=" + student
 				+ ", professor=" + professor + ", schedules=" + schedules + "]";
 	}
+
 
 }

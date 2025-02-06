@@ -1,34 +1,24 @@
 package com.Reto2.RetoServer.SocketIO;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
+import javax.crypto.Cipher;
 import java.lang.reflect.Type;
 import java.sql.Date;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-
 import com.Reto2.RetoServer.Config.Events;
 import com.Reto2.RetoServer.Model.MessageInput;
 import com.Reto2.RetoServer.Model.MessageOutput;
-
 import com.Reto2.RetoServer.Database.Entity.*;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
@@ -38,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.Reto2.RetoServer.mail.EmailSender;
 
 import jakarta.persistence.NoResultException;
 
@@ -59,12 +50,13 @@ public class SocketIOModule {
 		// Custom events
 		server.addEventListener(Events.ON_LOGIN.value, String.class, this.login());
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
-		server.addEventListener(Events.ON_GET_ALL.value, MessageInput.class, this.getAll());
+
 		server.addEventListener(Events.ON_FILTER_BY_COURSE.value, String.class, this.filterByCourse());
 		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
 		server.addEventListener(Events.ON_LOGOUT.value, MessageInput.class, this.logout());
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
+		server.addEventListener(Events.ON_FILTER_BY_SCHEDULE.value, String.class, this.scheduleFilter());
 		server.addEventListener(Events.ON_GET_EXTERNAL_COURSES.value, String.class, this.getExternalCourses());
 		server.addEventListener(Events.ON_CHANGE_PASSWORD.value, String.class, this.changePassword());
 		server.addEventListener(Events.ON_GET_REUNIONS.value, String.class, this.getReunions());
@@ -73,29 +65,39 @@ public class SocketIOModule {
 		server.addEventListener(Events.ON_FORCE_REUNION.value, String.class, this.forceReunion());
 		server.addEventListener(Events.ON_CREATE_REUNION.value, String.class, this.createReunion());
 		server.addEventListener(Events.ON_FORGOT_PASSWORD.value, String.class, this.newPassword());
-
 	}
 
 	private DataListener<String> login() {
+
 		return ((client, data, ackSender) -> {
+
 			try {
+
 				System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
+
 				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
 				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
 				if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
+
 					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
+
 					System.out.println("Datos incorrecto");
+
 				}
 
 				String userName = jsonObject.get("message").getAsString();
+
 				String userPass = jsonObject.get("userPass").getAsString();
 
 				System.out.println(userName + ":" + userPass);
 
 				Client loginClient = sendClient(userName);
 				if(loginClient != null) {
+
 				String name = loginClient.getUserName();
+
 				String pass = loginClient.getPass();
 				Boolean userType = loginClient.isUserType();
 					if (userName.equals(name) && userPass.equals(pass)) {
@@ -107,7 +109,6 @@ public class SocketIOModule {
 								professor.setName(name);
 								responseJson.add("loginClient", gson.toJsonTree(loginClient));
 								responseJson.add("professor", gson.toJsonTree(professor));
-
 								String answerMessage = gson.toJson(responseJson);
 								MessageOutput messageOutput = new MessageOutput(answerMessage);
 
@@ -161,11 +162,57 @@ public class SocketIOModule {
 				}else {
 					client.sendEvent(Events.ON_LOGIN_FAIL.value, "El usuario no existe en la BBDD");
 				}
+
 			} catch (Exception e) {
+
 				e.printStackTrace();
+
 				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Error de servidor");
+
 			}
+
 		});
+
+	}
+
+	public static byte[] encriptar(byte[] inputBytes, PublicKey publicKey, String algorithm) {
+
+		try {
+
+			/*
+			 * Using getIstance in static to create object with its RSA
+			 */
+			Cipher cipher = Cipher.getInstance(algorithm);
+
+			// Encryps public key
+			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+
+			/*
+			 * Convert text to a inputByte
+			 */
+			return cipher.doFinal(inputBytes);
+
+		} catch (Exception ex) {
+			System.out.print(ex);
+		}
+
+		return null;
+	}
+
+	public static byte[] desencriptar(byte[] inputBytes, PrivateKey privateKey, String algorithm) {
+
+		try {
+
+			Cipher cipher = Cipher.getInstance(algorithm);
+
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			return cipher.doFinal(inputBytes);
+
+		} catch (Exception ex) {
+			System.out.print(ex);
+		}
+
+		return null;
 	}
 
 	private DataListener<MessageInput> logout() {
@@ -258,6 +305,37 @@ public class SocketIOModule {
 		});
 	}
 
+	private DataListener<String> scheduleFilter() {
+		return ((client, data, ackSender) -> {
+			try {
+				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+				JsonObject message = gson.fromJson(data, JsonObject.class).getAsJsonObject("message");
+
+				if (message == null || !message.has("userId")) {
+					client.sendEvent(Events.ON_FILTER_ERROR.value, "Formato de datos invalido");
+					System.out.println("Datos incorrectos");
+				} else {
+					int userId = message.get("userId").getAsInt();
+
+					List<Schedule> schedules = getSchedulesSubjects(userId);
+
+					for (Schedule schedule : schedules) {
+						schedule.getSubject();
+						
+					}
+
+					String jsonDocuments = gson.toJson(schedules);
+					System.out.println(jsonDocuments);
+
+					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
+			}
+		});
+	}
+
 	private DataListener<String> filterByCycle() {
 		return ((client, data, ackSender) -> {
 			try {
@@ -274,8 +352,9 @@ public class SocketIOModule {
 						links.add(document.getLink());
 					}
 					String jsonDocuments = gson.toJson(links);
-					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
+					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
 				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				client.sendEvent(Events.ON_FILTER_ERROR.value, "Error de servidor");
@@ -478,28 +557,6 @@ public class SocketIOModule {
 		});
 	}
 
-	private DataListener<MessageInput> getAll() {
-		return ((client, data, ackSender) -> {
-			try {
-				// This time, we simply write the message in data
-				System.out.println("Client from " + client.getRemoteAddress() + " wants to getAll");
-
-				// We access to database and... we get a bunch of people
-				List<Schedule> clients = getAllClient();
-				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-				// We parse the answer into JSON
-				String answerMessage = gson.toJson(clients);
-
-				// ... and we send it back to the client inside a MessageOutput
-				MessageOutput messageOutput = new MessageOutput(answerMessage);
-				System.out.println(messageOutput);
-				client.sendEvent(Events.ON_GET_ALL_ANSWER.value, messageOutput);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-	}
-
 	private DataListener<String> newPassword() {
 		return ((client, data, ackSender) -> {
 			try {
@@ -527,7 +584,7 @@ public class SocketIOModule {
 		});
 
 	}
-
+	
 	private ConnectListener onConnect() {
 		return (client -> {
 			client.joinRoom("default-room");
@@ -635,30 +692,27 @@ public class SocketIOModule {
 
 	}
 	
-	public List<Schedule> getSchedulesSubjects(int userId) {
-        String hql = "FROM Schedule WHERE client.id = :userId";
-        Query<Schedule> query = session.createQuery(hql, Schedule.class);
-        query.setParameter("userId", userId);
-        List<Schedule> schedules = null;
-        System.out.println("Buscando horarios para el usuario ID: " + userId);
-        try {
-             schedules = query.getResultList();
-        
-        } catch (NoResultException e) {
-            System.out.println("No se encontraron horarios para el cliente ID: " + userId);
-        } catch (Exception e) {
-            System.out.println("Error al recuperar los horarios: " + e.getMessage());
-        }
-        return schedules;
-    
-    }
 
-	public List<Schedule> getAllClient() {
-		List<Schedule> clients = new ArrayList<Schedule>();
-		String hql = "from Schedule";
-		Query<Schedule> q = session.createQuery(hql, Schedule.class);
-		clients = q.list();
-		return clients;
+	public List<Schedule> getSchedulesSubjects(int userId) {
+	    List<Schedule> schedules = new ArrayList<>();
+	    
+	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+	        Transaction tx = session.beginTransaction();
+	        
+	        String hql = "FROM Schedule s JOIN FETCH s.subject WHERE s.client.id = :userId";
+	        Query<Schedule> query = session.createQuery(hql, Schedule.class);
+	        query.setParameter("userId", userId);
+
+	        schedules = query.getResultList();
+	        
+	        tx.commit();
+	    } catch (NoResultException e) {
+	        System.out.println("No se encontraron horarios para el cliente ID: " + userId);
+	    } catch (Exception e) {
+	        System.out.println("Error al recuperar los horarios: " + e.getMessage());
+	    }
+
+	    return schedules;
 	}
 
 	public List<Documents> getDocumentsBySubject(int userId) {
@@ -677,6 +731,14 @@ public class SocketIOModule {
 		query.setParameter("subjectId", subjectId);
 		List<Documents> documents = query.list();
 		return documents;
+	}
+
+	public List<Schedule> getAllSchedules() {
+		String hql = "from Schedules";
+		List<Schedule> schedules = null;
+		Query<Schedule> query = session.createQuery(hql, Schedule.class);
+		schedules = query.getResultList();
+		return schedules;
 	}
 
 	public List<Documents> getDocumentsByCourse(int userId) {
@@ -905,13 +967,22 @@ public class SocketIOModule {
 	}
 
 	private boolean sendEmail() {
+		System.out.println("Preparing to send email...");
 		String user = "elorclass2@gmail.com";
 		String pass = "zfry gdak cgwo qmwl";
-		String to = "liher.chamorropa@elorrieta-errekamari.com";
+		String to = "yifei.ye@elorrieta-errekamari.com";
 		String subject = "Contraseña olvidada";
 		String message = "Se ha enviado este correo porque has olvidado tu contraseña, esta es tu nueva contraseña: nuevacontraseña.";
 
-		System.out.println("Preparing to send email...");
+		EmailSender emailService = new EmailSender(user, pass, "smtp.gmail.com", 465);
+
+		try {
+			emailService.sendMail(to, subject, message);
+			return true;
+		} catch (MessagingException e) {
+			System.out.println("Doh! " + e.getMessage());
+		}
+
 		return false;
 	}
 
@@ -937,5 +1008,4 @@ public class SocketIOModule {
 			return false;
 		}
 	}
-
 }

@@ -12,7 +12,7 @@
         <property name="subjectName" type="string">
             <column length="40" name="SubjectName" not-null="true"/>
         </property>
-        <set fetch="select" inverse="true" lazy="true" name="documentses" table="documents">
+        <set fetch="select" inverse="true" lazy="false" name="documentses" table="documents">
             <key>
                 <column name="AllowedSubject" not-null="true"/>
             </key>
