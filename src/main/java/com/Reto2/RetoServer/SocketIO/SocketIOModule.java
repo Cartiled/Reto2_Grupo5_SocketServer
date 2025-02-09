@@ -20,6 +20,7 @@ import com.Reto2.RetoServer.Config.Events;
 import com.Reto2.RetoServer.Model.MessageInput;
 import com.Reto2.RetoServer.Model.MessageOutput;
 import com.Reto2.RetoServer.Database.Entity.*;
+import com.Reto2.RetoServer.Encrypt.EncryptPass;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
@@ -38,6 +39,7 @@ public class SocketIOModule {
 	SessionFactory sesion = HibernateUtil.getSessionFactory();
 	Session session = sesion.openSession();
 	Transaction transaction = null;
+	private String encryptRule = "simplerule";
 
 	public SocketIOModule(SocketIOServer server) {
 		super();
@@ -95,12 +97,15 @@ public class SocketIOModule {
 
 				Client loginClient = sendClient(userName);
 				if(loginClient != null) {
-
+			
 				String name = loginClient.getUserName();
 
 				String pass = loginClient.getPass();
+				
+				String descryptPass = EncryptPass.AESDncode(encryptRule, pass);
+				
 				Boolean userType = loginClient.isUserType();
-					if (userName.equals(name) && userPass.equals(pass)) {
+					if (userName.equals(name) && userPass.equals(descryptPass)) {
 						if (loginClient.getRegistered() == true) {
 							if (userType == true) {
 								System.out.println("usuario registrado");
@@ -127,7 +132,6 @@ public class SocketIOModule {
 								client.sendEvent(Events.ON_LOGIN_SUCCESS.value, messageOutput);
 							}
 						} else {
-
 							if (userType == true) {
 								System.out.println("usuario registrado");
 								JsonObject responseJson = new JsonObject();
@@ -258,12 +262,14 @@ public class SocketIOModule {
 					String pass = loginClient.getPass();
 
 					System.out.println("datos recogidos");
-					if (userPass.equals(pass)) {
+					if (EncryptPass.AESDncode(encryptRule, pass).equals(userPass)) {
 						System.out.println("La contraseña es igual que la anterior");
 						client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value,
 								"Escoge una contraseña que sea diferente");
 					} else {
-						Client newUserData = new Client(userName, userSurname, userSecondSurname, userPass, userDni,
+						EncryptPass.AESEncode(encryptRule, userPass);
+						System.out.println(EncryptPass.AESEncode(encryptRule, userPass));
+						Client newUserData = new Client(userName, userSurname, userSecondSurname, EncryptPass.AESEncode(encryptRule, userPass), userDni,
 								userDirection, userTelephone, true);
 						updateUserData(loginClient.getUserName(), newUserData);
 						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
@@ -295,7 +301,6 @@ public class SocketIOModule {
 						links.add(document.getLink());
 					}
 					String jsonDocuments = gson.toJson(links);
-					System.out.println(jsonDocuments);
 					client.sendEvent(Events.ON_FILTER_BY_SUBJECT_RESPONSE.value, jsonDocuments);
 				}
 			} catch (Exception e) {
@@ -323,9 +328,7 @@ public class SocketIOModule {
 						schedule.getSubject();
 						
 					}
-
 					String jsonDocuments = gson.toJson(schedules);
-					System.out.println(jsonDocuments);
 
 					client.sendEvent(Events.ON_FILTER_BY_SCHEDULE_RESPONSE.value, jsonDocuments);
 				}

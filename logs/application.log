@@ -1,0 +1,24 @@
+2025-02-06 17:33:43 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-06 17:33:43 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-06 17:35:59 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-06 17:35:59 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-06 17:40:17 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-06 17:40:17 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-06 17:41:02 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-06 17:41:02 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-06 17:41:38 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-06 17:41:38 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-06 17:41:52 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-06 17:41:52 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
