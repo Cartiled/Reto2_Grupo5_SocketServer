@@ -4,7 +4,7 @@
 		"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<property name="hibernate.connection.password">Elorrieta00</property>
+		<property name="hibernate.connection.password">elorrieta</property>
 		<property name="hibernate.connection.url">jdbc:mysql://localhost/reto2grupo5</property>
 		<property name="hibernate.connection.username">root</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
