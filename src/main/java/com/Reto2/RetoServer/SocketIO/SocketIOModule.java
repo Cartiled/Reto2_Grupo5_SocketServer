@@ -1,7 +1,5 @@
 package com.Reto2.RetoServer.SocketIO;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +7,6 @@ import java.util.Set;
 
 import javax.mail.MessagingException;
 
-import javax.crypto.Cipher;
 import java.lang.reflect.Type;
 import java.sql.Date;
 import org.hibernate.Session;
@@ -49,10 +46,8 @@ public class SocketIOModule {
 		server.addConnectListener(onConnect());
 		server.addDisconnectListener(onDisconnect());
 
-		// Custom events
 		server.addEventListener(Events.ON_LOGIN.value, String.class, this.login());
 		server.addEventListener(Events.ON_REGISTER_ANSWER.value, String.class, this.register());
-
 		server.addEventListener(Events.ON_FILTER_BY_COURSE.value, String.class, this.filterByCourse());
 		server.addEventListener(Events.ON_FILTER_BY_CYCLE.value, String.class, this.filterByCycle());
 		server.addEventListener(Events.ON_FILTER_BY_SUBJECT.value, String.class, this.filterBySubject());
@@ -70,25 +65,15 @@ public class SocketIOModule {
 	}
 
 	private DataListener<String> login() {
-
 		return ((client, data, ackSender) -> {
-
 			try {
-
 				System.out.println("Client from " + client.getRemoteAddress() + " wants to login");
-
 				Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
 				JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
-
 				if (!jsonObject.has("message") || !jsonObject.has("userPass")) {
-
 					client.sendEvent(Events.ON_LOGIN_FAIL.value, "Formato de datos invalido");
-
 					System.out.println("Datos incorrecto");
-
 				}
-
 				String userName = jsonObject.get("message").getAsString();
 
 				String userPass = jsonObject.get("userPass").getAsString();
@@ -96,16 +81,17 @@ public class SocketIOModule {
 				System.out.println(userName + ":" + userPass);
 
 				Client loginClient = sendClient(userName);
-				if(loginClient != null) {
-			
-				String name = loginClient.getUserName();
+				if (loginClient != null) {
 
-				String pass = loginClient.getPass();
-				
-				String descryptPass = EncryptPass.AESDncode(encryptRule, pass);
-				
-				Boolean userType = loginClient.isUserType();
-					if (userName.equals(name) && userPass.equals(descryptPass)) {
+					String name = loginClient.getUserName();
+
+					String pass = loginClient.getPass();
+
+					String descryptPass = EncryptPass.AESDecode(encryptRule, pass);
+					System.out.println(descryptPass);
+
+					Boolean userType = loginClient.isUserType();
+					if (userName.equals(name) && pass.equals(userPass)) {
 						if (loginClient.getRegistered() == true) {
 							if (userType == true) {
 								System.out.println("usuario registrado");
@@ -163,61 +149,20 @@ public class SocketIOModule {
 						client.sendEvent(Events.ON_LOGIN_FAIL.value, "Login incorrecto");
 						System.out.println("El usuario no ha podido loguearse: " + userName);
 					}
-				}else {
+				} else {
 					client.sendEvent(Events.ON_LOGIN_FAIL.value, "El usuario no existe en la BBDD");
 				}
 
 			} catch (Exception e) {
 
 				e.printStackTrace();
-
 				client.sendEvent(Events.ON_LOGIN_FAIL.value, "Error de servidor");
-
 			}
 
 		});
 
 	}
 
-	public static byte[] encriptar(byte[] inputBytes, PublicKey publicKey, String algorithm) {
-
-		try {
-
-			/*
-			 * Using getIstance in static to create object with its RSA
-			 */
-			Cipher cipher = Cipher.getInstance(algorithm);
-
-			// Encryps public key
-			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-
-			/*
-			 * Convert text to a inputByte
-			 */
-			return cipher.doFinal(inputBytes);
-
-		} catch (Exception ex) {
-			System.out.print(ex);
-		}
-
-		return null;
-	}
-
-	public static byte[] desencriptar(byte[] inputBytes, PrivateKey privateKey, String algorithm) {
-
-		try {
-
-			Cipher cipher = Cipher.getInstance(algorithm);
-
-			cipher.init(Cipher.DECRYPT_MODE, privateKey);
-			return cipher.doFinal(inputBytes);
-
-		} catch (Exception ex) {
-			System.out.print(ex);
-		}
-
-		return null;
-	}
 
 	private DataListener<MessageInput> logout() {
 		return ((client, data, ackSender) -> {
@@ -262,14 +207,13 @@ public class SocketIOModule {
 					String pass = loginClient.getPass();
 
 					System.out.println("datos recogidos");
-					if (EncryptPass.AESDncode(encryptRule, pass).equals(userPass)) {
+					if (pass.equals(EncryptPass.AESDecode(encryptRule, userPass))) {
 						System.out.println("La contraseña es igual que la anterior");
 						client.sendEvent(Events.ON_REGISTER_SAME_PASSWORD.value,
 								"Escoge una contraseña que sea diferente");
 					} else {
-						EncryptPass.AESEncode(encryptRule, userPass);
-						System.out.println(EncryptPass.AESEncode(encryptRule, userPass));
-						Client newUserData = new Client(userName, userSurname, userSecondSurname, EncryptPass.AESEncode(encryptRule, userPass), userDni,
+
+						Client newUserData = new Client(userName, userSurname, userSecondSurname, userPass, userDni,
 								userDirection, userTelephone, true);
 						updateUserData(loginClient.getUserName(), newUserData);
 						client.sendEvent(Events.ON_REGISTER_SUCCESS.value, "Has registrado tu usuario correctamente");
@@ -326,7 +270,7 @@ public class SocketIOModule {
 
 					for (Schedule schedule : schedules) {
 						schedule.getSubject();
-						
+
 					}
 					String jsonDocuments = gson.toJson(schedules);
 
@@ -414,7 +358,8 @@ public class SocketIOModule {
 				}
 				int userId = jsonObject.get("userId").getAsInt();
 				String newPassword = jsonObject.get("newPassword").getAsString();
-				if (changeUserPassword(userId, newPassword))
+
+				if (changeUserPassword(userId, EncryptPass.AESEncode(encryptRule, newPassword)))
 					client.sendEvent(Events.ON_CHANGE_PASSWORD_ANSWER.value, "OK!");
 				else
 					client.sendEvent(Events.ON_CHANGE_PASSWORD_FAIL.value, "No se ha podido cambiar la contraseña");
@@ -587,7 +532,7 @@ public class SocketIOModule {
 		});
 
 	}
-	
+
 	private ConnectListener onConnect() {
 		return (client -> {
 			client.joinRoom("default-room");
@@ -623,7 +568,7 @@ public class SocketIOModule {
 		try {
 			client = query.getSingleResult();
 		} catch (NoResultException e) {
-			System.out.println("El usuario:" +loginUserName + "no existe en BBDD");
+			System.out.println("El usuario:" + loginUserName + "no existe en BBDD");
 		}
 		return client;
 	}
@@ -694,28 +639,27 @@ public class SocketIOModule {
 		return course;
 
 	}
-	
 
 	public List<Schedule> getSchedulesSubjects(int userId) {
-	    List<Schedule> schedules = new ArrayList<>();
-	    
-	    try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-	        Transaction tx = session.beginTransaction();
-	        
-	        String hql = "FROM Schedule s JOIN FETCH s.subject WHERE s.client.id = :userId";
-	        Query<Schedule> query = session.createQuery(hql, Schedule.class);
-	        query.setParameter("userId", userId);
+		List<Schedule> schedules = new ArrayList<>();
 
-	        schedules = query.getResultList();
-	        
-	        tx.commit();
-	    } catch (NoResultException e) {
-	        System.out.println("No se encontraron horarios para el cliente ID: " + userId);
-	    } catch (Exception e) {
-	        System.out.println("Error al recuperar los horarios: " + e.getMessage());
-	    }
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			Transaction tx = session.beginTransaction();
 
-	    return schedules;
+			String hql = "FROM Schedule s JOIN FETCH s.subject WHERE s.client.id = :userId";
+			Query<Schedule> query = session.createQuery(hql, Schedule.class);
+			query.setParameter("userId", userId);
+
+			schedules = query.getResultList();
+
+			tx.commit();
+		} catch (NoResultException e) {
+			System.out.println("No se encontraron horarios para el cliente ID: " + userId);
+		} catch (Exception e) {
+			System.out.println("Error al recuperar los horarios: " + e.getMessage());
+		}
+
+		return schedules;
 	}
 
 	public List<Documents> getDocumentsBySubject(int userId) {
@@ -814,8 +758,6 @@ public class SocketIOModule {
 			if (reunion == null) {
 				return false;
 			}
-
-			// Solo se puede aceptar la reunion si la reunion no esta en un estado relevante
 			if (reunion.getReunionState() < 10)
 				reunion.setReunionState(reunion.getReunionState() + 1);
 			else if (reunion.getReunionState() == 0)
@@ -850,13 +792,12 @@ public class SocketIOModule {
 				return false;
 			}
 
-			// Solo se puede rechazar si la reunion esta en un estado no relevante
 			if (reunion.getReunionState() > 0)
 				reunion.setReunionState(reunion.getReunionState() - 1);
-			// Si la reunion esta forzada, no se puede rechazar mas veces.
+
 			else if (reunion.getReunionState() == 11)
 				return false;
-			// Si la reunion ya esta rechazada, no se puede rechazar mas veces.
+
 			else
 				return false;
 
@@ -975,7 +916,7 @@ public class SocketIOModule {
 		String pass = "zfry gdak cgwo qmwl";
 		String to = "yifei.ye@elorrieta-errekamari.com";
 		String subject = "Contraseña olvidada";
-		String message = "Se ha enviado este correo porque has olvidado tu contraseña, esta es tu nueva contraseña: nuevacontraseña.";
+		String message = "Se ha enviado este correo porque has olvidado tu contraseña, esta es tu nueva contraseña: nuevacontrasena.";
 
 		EmailSender emailService = new EmailSender(user, pass, "smtp.gmail.com", 465);
 
@@ -997,7 +938,7 @@ public class SocketIOModule {
 				return false;
 			}
 
-			user.setPass("nuevaContraseña");
+			user.setPass(EncryptPass.AESEncode(encryptRule, "nuevacontrasena"));
 
 			tx = session.beginTransaction();
 			session.save(user);

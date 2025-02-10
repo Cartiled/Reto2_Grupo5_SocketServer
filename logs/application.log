@@ -22,3 +22,95 @@
 				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
 2025-02-06 17:41:52 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
 				SocketIO server started at port: 2888
+2025-02-10 16:07:32 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:07:32 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:08:36 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:08:36 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:12:46 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:12:46 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:14:30 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:14:31 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:17:59 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:17:59 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:22:53 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:22:53 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:24:27 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:24:27 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:27:32 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:27:32 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:28:09 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:28:09 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:29:36 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:29:36 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:29:43 [nioEventLoopGroup-3-5] ERROR c.c.s.transport.PollingTransport -
+				f12f2bba-23cf-4128-8aee-84408fa716b7 is not registered. Closing connection
+2025-02-10 16:31:49 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:31:49 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:33:37 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:33:37 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:34:11 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:34:11 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:49:58 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:49:58 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:51:53 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:51:54 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:53:42 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:53:42 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:55:48 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:55:49 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:58:10 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:58:10 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 16:58:47 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 16:58:47 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 17:06:44 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 17:06:44 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 17:06:46 [nioEventLoopGroup-3-10] ERROR c.c.s.transport.PollingTransport -
+				04819550-e866-4a90-8c45-3b2b77e19a5e is not registered. Closing connection
+2025-02-10 17:06:46 [nioEventLoopGroup-3-11] ERROR c.c.s.transport.PollingTransport -
+				04819550-e866-4a90-8c45-3b2b77e19a5e is not registered. Closing connection
+2025-02-10 19:27:47 [main] INFO  c.c.socketio.SocketIOServer -
+				Session store / pubsub factory used: MemoryStoreFactory (local session store only)
+2025-02-10 19:27:47 [nioEventLoopGroup-2-1] INFO  c.c.socketio.SocketIOServer -
+				SocketIO server started at port: 2888
+2025-02-10 19:29:49 [nioEventLoopGroup-3-19] ERROR c.c.s.transport.PollingTransport -
+				730a5868-fac9-4137-8603-c1b4c864bda8 is not registered. Closing connection
